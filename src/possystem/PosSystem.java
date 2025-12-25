@@ -1,20 +1,20 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package possystem;
 
-/**
- *
- * @author Heshith Dashan
- */
+import com.formdev.flatlaf.FlatDarkLaf; 
+import javax.swing.*;
+
 public class PosSystem {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        new LoginForm().setVisible(true);
+        
+        try {
+            UIManager.setLookAndFeel(new FlatDarkLaf());
+        } catch (Exception ex) {
+            System.err.println("Failed to initialize LaF");
+        }
+
+        java.awt.EventQueue.invokeLater(() -> {
+            new LoginForm().setVisible(true);
+        });
     }
-   
 }

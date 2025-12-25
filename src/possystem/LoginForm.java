@@ -10,40 +10,48 @@ public class LoginForm extends JFrame {
     private JButton btnLogin, btnExit;
 
     public LoginForm() {
-
         setTitle("POS System Login");
-        setSize(400, 250);
+        setSize(400, 320);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(new BorderLayout());
+        
+        getRootPane().setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        setLayout(new BorderLayout(10, 10));
 
-        JLabel lblHeader = new JLabel("Please Login", SwingConstants.CENTER);
-        lblHeader.setFont(new Font("Arial", Font.BOLD, 20));
-        lblHeader.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        JLabel lblHeader = new JLabel("POS SYSTEM", SwingConstants.CENTER);
+
+        lblHeader.putClientProperty("FlatLaf.styleClass", "h1"); 
         add(lblHeader, BorderLayout.NORTH);
 
-        JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
-
-        formPanel.add(new JLabel("Username:"));
+        JPanel formPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+        
+        formPanel.add(new JLabel("Username"));
         txtUsername = new JTextField();
+        txtUsername.putClientProperty("JTextField.placeholderText", "Enter your username");
         formPanel.add(txtUsername);
 
-        formPanel.add(new JLabel("Password:"));
+        formPanel.add(new JLabel("Password"));
         txtPassword = new JPasswordField();
+        txtPassword.putClientProperty("JTextField.placeholderText", "Enter your password");
+        txtPassword.putClientProperty("JComponent.showRevealButton", true); 
         formPanel.add(txtPassword);
 
         add(formPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        
         btnLogin = new JButton("Login");
+        btnLogin.putClientProperty("JButton.buttonType", "roundRect"); 
+        btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        
         btnExit = new JButton("Exit");
+        btnExit.putClientProperty("JButton.buttonType", "roundRect");
 
         buttonPanel.add(btnLogin);
         buttonPanel.add(btnExit);
 
         add(buttonPanel, BorderLayout.SOUTH);
-        
+
         btnLogin.addActionListener(e -> {
             String username = txtUsername.getText();
             String password = new String(txtPassword.getPassword());
@@ -51,7 +59,7 @@ public class LoginForm extends JFrame {
             if (username.equals("admin") && password.equals("123")) {
                 JOptionPane.showMessageDialog(this, "Login Successful! Welcome Sago!");
             } else {
-                JOptionPane.showMessageDialog(this, "Invalid Username or Password!", "Login Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid Details!", "Error", JOptionPane.ERROR_MESSAGE);
             }
         });
 
