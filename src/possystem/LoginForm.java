@@ -2,8 +2,6 @@ package possystem;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class LoginForm extends JFrame {
 
@@ -16,16 +14,16 @@ public class LoginForm extends JFrame {
         setTitle("POS System Login");
         setSize(400, 250);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null); 
-        setLayout(new BorderLayout()); 
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
 
         JLabel lblHeader = new JLabel("Please Login", SwingConstants.CENTER);
         lblHeader.setFont(new Font("Arial", Font.BOLD, 20));
-        lblHeader.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0)); // වටේට ඉඩ තියන්න
+        lblHeader.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
         add(lblHeader, BorderLayout.NORTH);
 
         JPanel formPanel = new JPanel(new GridLayout(2, 2, 10, 10));
-        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40)); // ෆෝම් එක වටේට ඉඩ
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 20, 40));
 
         formPanel.add(new JLabel("Username:"));
         txtUsername = new JTextField();
@@ -47,10 +45,16 @@ public class LoginForm extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
         
         btnLogin.addActionListener(e -> {
+            String username = txtUsername.getText();
+            String password = new String(txtPassword.getPassword());
 
-            JOptionPane.showMessageDialog(this, "Login Button Clicked!");
+            if (username.equals("admin") && password.equals("123")) {
+                JOptionPane.showMessageDialog(this, "Login Successful! Welcome Sago!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Invalid Username or Password!", "Login Error", JOptionPane.ERROR_MESSAGE);
+            }
         });
 
-        btnExit.addActionListener(e -> System.exit(0)); 
+        btnExit.addActionListener(e -> System.exit(0));
     }
 }
