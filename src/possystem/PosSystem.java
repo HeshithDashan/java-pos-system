@@ -14,7 +14,7 @@ public class PosSystem {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        new LoginForm().setVisible(true);
     }
-    
+   
 }
