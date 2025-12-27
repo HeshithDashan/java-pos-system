@@ -21,14 +21,12 @@ public class LoginForm extends JFrame {
         
         setLayout(new BorderLayout());
 
-        // --- Header (Blue Text) ---
         JLabel lblHeader = new JLabel("SMART POS", SwingConstants.CENTER);
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 30));
         lblHeader.setForeground(new Color(33, 150, 243));
         lblHeader.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         add(lblHeader, BorderLayout.NORTH);
 
-        // --- Form Panel ---
         JPanel mainContentPanel = new JPanel(new BorderLayout(10, 10));
         mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 30, 40));
 
@@ -55,7 +53,6 @@ public class LoginForm extends JFrame {
 
         mainContentPanel.add(formPanel, BorderLayout.CENTER);
 
-        // --- Buttons ---
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         
         btnLogin = new JButton("Login");
@@ -76,39 +73,36 @@ public class LoginForm extends JFrame {
         mainContentPanel.add(buttonPanel, BorderLayout.SOUTH);
         add(mainContentPanel, BorderLayout.CENTER);
 
-        // --- 🔥 REAL DATABASE LOGIC ---
         btnLogin.addActionListener(e -> {
             String username = txtUsername.getText();
             String password = new String(txtPassword.getPassword());
 
             try {
-                // 1. Database එකට සම්බන්ධ වෙන්න
+
                 Connection conn = DBConnection.connect();
                 
-                // 2. Query එක ලියන්න (මේ නම සහ පාස්වර්ඩ් තියෙන කෙනෙක් ඉන්නවද?)
                 String sql = "SELECT * FROM users WHERE username=? AND password=?";
                 PreparedStatement pst = conn.prepareStatement(sql);
                 
-                pst.setString(1, username); // පළවෙනි ? ලකුණට username දාන්න
-                pst.setString(2, password); // දෙවෙනි ? ලකුණට password දාන්න
+                pst.setString(1, username); 
+                pst.setString(2, password);
                 
-                // 3. Query එක Run කරන්න
                 ResultSet rs = pst.executeQuery();
                 
                 if (rs.next()) {
-                    // හරි නම් (Data ආවා නම්)
-                    String role = rs.getString("role"); // එයාගේ තනතුර (admin/cashier)
+
+                    String role = rs.getString("role");
                     
                     JOptionPane.showMessageDialog(this, "Login Successful! Welcome " + role + "!");
                     this.dispose(); 
                     new Dashboard().setVisible(true); 
                     
                 } else {
-                    // වැරදි නම්
+
                     JOptionPane.showMessageDialog(this, "Invalid Username or Password!", "Login Error", JOptionPane.ERROR_MESSAGE);
                 }
                 
-                conn.close(); // වැඩේ ඉවර වුනාම connection වහන්න
+                conn.close(); 
                 
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage());
