@@ -12,30 +12,51 @@ public class Dashboard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // --- 1. Header ---
+        // --- 1. Header Panel ---
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(33, 150, 243));
-        headerPanel.setPreferredSize(new Dimension(800, 80));
+        headerPanel.setBackground(new Color(33, 150, 243)); // Header Blue Color
+        headerPanel.setPreferredSize(new Dimension(800, 90)); // උස චුට්ටක් වැඩි කළා අයිකන් එකට
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        JLabel lblTitle = new JLabel("🛒 POS SYSTEM DASHBOARD");
+        // 🔥 HEADER TITLE + ICON 🔥
+        JLabel lblTitle = new JLabel(" SMART POS DASHBOARD"); // ඉස්සරහින් පොඩි ඉඩක් තිබ්බා
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblTitle.setForeground(Color.WHITE);
+        
+        // Header Icon එක Load කිරීම සහ Resize කිරීම
+        try {
+            URL iconURL = getClass().getResource("/icons/header.png"); // ඔයා දාපු අලුත් පින්තූරේ නම
+            if (iconURL != null) {
+                ImageIcon icon = new ImageIcon(iconURL);
+                // Header එකට ගැලපෙන සයිස් එකකට (40x40) පොඩි කරමු
+                Image img = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                lblTitle.setIcon(new ImageIcon(img));
+                lblTitle.setIconTextGap(15); // Icon එකයි Text එකයි අතර පරතරය
+            }
+        } catch (Exception e) {
+            System.out.println("Header icon error: " + e.getMessage());
+        }
+        
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
+        // 🔥 LOGOUT BUTTON (RED COLOR) 🔥
         JButton btnLogout = new JButton("Logout");
+        btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnLogout.putClientProperty("JButton.buttonType", "roundRect");
-        btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        
+        // පාට දාන කොටස (Login එකේ Exit බට්න් එකේ රතු පාටම ගත්තා)
+        btnLogout.setBackground(new Color(244, 67, 54)); // ලස්සන රතු පාටක්
+        btnLogout.setForeground(Color.WHITE); // අකුරු සුදු පාටින්
+        btnLogout.setPreferredSize(new Dimension(120, 45)); // බට්න් එකේ සයිස් එක හැදුවා
+
         headerPanel.add(btnLogout, BorderLayout.EAST);
 
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- 2. Menu Buttons Grid ---
-        JPanel menuPanel = new JPanel(new GridLayout(2, 3, 30, 30)); // පරතරය ටිකක් වැඩි කළා (30)
+        // --- 2. Menu Buttons Grid (කලින් විදියමයි) ---
+        JPanel menuPanel = new JPanel(new GridLayout(2, 3, 30, 30));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
-        // 🔥 මෙන්න මෙතන තමයි අපි අර පින්තූරවල නම් ටික දෙන්නේ
-        // (Text එක, Image එකේ නම)
         menuPanel.add(createMenuButton("New Sale", "sale.png"));
         menuPanel.add(createMenuButton("Products", "product.png"));
         menuPanel.add(createMenuButton("Customers", "customer.png"));
@@ -47,7 +68,8 @@ public class Dashboard extends JFrame {
 
         // --- Logout Logic ---
         btnLogout.addActionListener(e -> {
-            int choice = JOptionPane.showConfirmDialog(this, "Logout?", "Confirm", JOptionPane.YES_NO_OPTION);
+            // Logout අහන Box එකේ අයිකන් එකත් Warning විදියට වෙනස් කළා
+            int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (choice == JOptionPane.YES_OPTION) {
                 this.dispose();
                 new LoginForm().setVisible(true);
@@ -55,40 +77,25 @@ public class Dashboard extends JFrame {
         });
     }
 
-    // 🔥 PRO BUTTON CREATOR METHOD 🔥
+    // --- Button Creator Method (කලින් විදියමයි) ---
     private JButton createMenuButton(String text, String iconName) {
         JButton btn = new JButton(text);
-        
-        // 1. අකුරු වල ස්ටයිල් එක
         btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
         btn.setFocusPainted(false);
         btn.putClientProperty("JButton.buttonType", "roundRect");
 
-        // 2. Icon එක Load කරලා Resize කරන කොටස
         try {
-            // "icons" පැකේජ් එක ඇතුලේ තියෙන පින්තූරේ ගන්න
             URL iconURL = getClass().getResource("/icons/" + iconName);
-            
             if (iconURL != null) {
                 ImageIcon originalIcon = new ImageIcon(iconURL);
-                
-                // Image එක 64x64 සයිස් එකට පොඩි කරමු (Dashboard එකට ලොකු අයිකන් ලස්සනයි)
                 Image img = originalIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
-                
-                btn.setIcon(new ImageIcon(img)); // බට්න් එකට අයිකන් එක දානවා
-            } else {
-                System.err.println("Icon not found: " + iconName);
+                btn.setIcon(new ImageIcon(img));
             }
         } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        // 3. Icon එක සහ Text එක තියෙන විදිය (Layout)
-        // අයිකන් එක උඩින්, Text එක යටින්
         btn.setHorizontalTextPosition(SwingConstants.CENTER);
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
-        
-        // Icon එකයි Text එකයි අතර පරතරය
         btn.setIconTextGap(15); 
 
         return btn;
