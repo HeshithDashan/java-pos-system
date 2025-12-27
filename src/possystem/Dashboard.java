@@ -12,7 +12,6 @@ public class Dashboard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // --- 1. Header Panel ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(33, 150, 243));
         headerPanel.setPreferredSize(new Dimension(800, 90));
@@ -46,7 +45,6 @@ public class Dashboard extends JFrame {
         headerPanel.add(btnLogout, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- 2. Menu Buttons Grid ---
         JPanel menuPanel = new JPanel(new GridLayout(2, 3, 30, 30));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
@@ -90,7 +88,6 @@ public class Dashboard extends JFrame {
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setIconTextGap(15);
 
-        // 🔥 Button Click Logic (Updated with Customers)
         btn.addActionListener(e -> {
             if (text.equals("Products") || text.equals("Manage Products")) {
                 new ProductManagement().setVisible(true);
@@ -98,7 +95,7 @@ public class Dashboard extends JFrame {
             else if (text.contains("New Sale")) {
                 new NewSale().setVisible(true);
             }
-            // 🔥 අලුත් කෑල්ල: Customer Management Link එක
+
             else if (text.contains("Customers")) {
                 new CustomerManagement().setVisible(true);
             }

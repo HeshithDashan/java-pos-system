@@ -21,14 +21,12 @@ public class CustomerManagement extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // --- Header ---
-        JLabel lblHeader = new JLabel("👥 CUSTOMER MANAGEMENT", SwingConstants.CENTER);
+        JLabel lblHeader = new JLabel(" CUSTOMER MANAGEMENT", SwingConstants.CENTER);
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblHeader.setForeground(new Color(33, 150, 243));
         lblHeader.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(lblHeader, BorderLayout.NORTH);
 
-        // --- Input Panel ---
         JPanel inputPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Add New Customer"));
         inputPanel.setPreferredSize(new Dimension(300, 0));
@@ -61,7 +59,6 @@ public class CustomerManagement extends JFrame {
         westPanel.add(inputPanel, BorderLayout.NORTH);
         add(westPanel, BorderLayout.WEST);
 
-        // --- Table ---
         String[] columns = {"ID", "Name", "Phone", "Email"};
         tableModel = new DefaultTableModel(columns, 0);
         customerTable = new JTable(tableModel);
@@ -73,7 +70,6 @@ public class CustomerManagement extends JFrame {
 
         loadCustomers();
 
-        // --- Actions ---
         btnAdd.addActionListener(e -> addCustomer());
         btnDelete.addActionListener(e -> deleteCustomer());
     }

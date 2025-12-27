@@ -11,6 +11,7 @@ import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.awt.print.Printable;
@@ -32,6 +33,7 @@ public class NewSale extends JFrame {
         getContentPane().setBackground(new Color(24, 24, 24));
         setLayout(new BorderLayout());
 
+        // --- Header ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(33, 150, 243)); 
         headerPanel.setPreferredSize(new Dimension(800, 70));
@@ -49,6 +51,7 @@ public class NewSale extends JFrame {
 
         add(headerPanel, BorderLayout.NORTH);
 
+        // --- Left Panel ---
         JPanel leftPanel = new JPanel(new BorderLayout(20, 20));
         leftPanel.setBackground(new Color(24, 24, 24));
         leftPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -101,6 +104,7 @@ public class NewSale extends JFrame {
 
         add(leftPanel, BorderLayout.CENTER);
 
+        // --- Right Panel ---
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setPreferredSize(new Dimension(400, 0));
         rightPanel.setBackground(new Color(30, 30, 30));
@@ -163,8 +167,10 @@ public class NewSale extends JFrame {
 
         rightPanel.add(btnPanel, BorderLayout.SOUTH);
 
+        // 🔥 මෙන්න මේ පේළිය තමයි මග හැරුනේ! 
         add(rightPanel, BorderLayout.EAST);
 
+        // --- Actions ---
         btnAdd.addActionListener(e -> addItemToCart());
 
         btnRemove.addActionListener(e -> {
@@ -267,6 +273,7 @@ public class NewSale extends JFrame {
         }
     }
 
+    // 🔥 SAVE SALE TO DATABASE & UPDATE STOCK
     private void payAndPrint() {
         if (cartModel.getRowCount() == 0) {
             Message.showError(this, "Cart is empty!");
@@ -275,29 +282,58 @@ public class NewSale extends JFrame {
 
         try {
             double cash = Double.parseDouble(txtCash.getText());
+            double balance = cash - netTotal;
+            
             if (cash < netTotal) {
                 Message.showError(this, "Insufficient Cash!");
                 return;
             }
 
             Connection conn = DBConnection.connect();
-            String updateSql = "UPDATE products SET stock = stock - ? WHERE id = ?";
-            PreparedStatement pst = conn.prepareStatement(updateSql);
+            
+            String insertSale = "INSERT INTO sales (total_price, cash_paid, balance) VALUES (?, ?, ?)";
+            PreparedStatement pstSale = conn.prepareStatement(insertSale, Statement.RETURN_GENERATED_KEYS);
+            pstSale.setDouble(1, netTotal);
+            pstSale.setDouble(2, cash);
+            pstSale.setDouble(3, balance);
+            pstSale.executeUpdate();
+            
+            ResultSet rs = pstSale.getGeneratedKeys();
+            int saleId = 0;
+            if (rs.next()) {
+                saleId = rs.getInt(1);
+            }
+
+            String insertItem = "INSERT INTO sales_items (sale_id, product_name, price, qty, sub_total) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement pstItem = conn.prepareStatement(insertItem);
+            
+            String updateStock = "UPDATE products SET stock = stock - ? WHERE id = ?";
+            PreparedStatement pstStock = conn.prepareStatement(updateStock);
 
             for (int i = 0; i < cartModel.getRowCount(); i++) {
-                int id = (int) cartModel.getValueAt(i, 0); 
+                int prodId = (int) cartModel.getValueAt(i, 0); 
+                String name = cartModel.getValueAt(i, 1).toString();
+                double price = (double) cartModel.getValueAt(i, 2);
                 int qty = (int) cartModel.getValueAt(i, 3); 
+                double subTotal = (double) cartModel.getValueAt(i, 4);
 
-                pst.setInt(1, qty);
-                pst.setInt(2, id);
-                pst.executeUpdate(); 
+                pstItem.setInt(1, saleId);
+                pstItem.setString(2, name);
+                pstItem.setDouble(3, price);
+                pstItem.setInt(4, qty);
+                pstItem.setDouble(5, subTotal);
+                pstItem.executeUpdate();
+                
+                pstStock.setInt(1, qty);
+                pstStock.setInt(2, prodId);
+                pstStock.executeUpdate();
             }
             
             conn.close();
 
-            Message.showSuccess(this, "Bill Paid & Printing... 🖨️");
+            Message.showSuccess(this, "Bill Saved & Printing... 🖨️");
             
-            printBill();
+            printBill(); 
 
             cartModel.setRowCount(0);
             updateNetTotal();
