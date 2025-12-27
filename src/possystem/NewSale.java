@@ -6,6 +6,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class NewSale extends JFrame {
 
@@ -13,19 +16,19 @@ public class NewSale extends JFrame {
     private JLabel lblTotal, lblBalance;
     private JTable cartTable;
     private DefaultTableModel cartModel;
+    private double netTotal = 0.0; // මුළු එකතුව මතක තියාගන්න
 
     public NewSale() {
         setTitle("New Sale (Billing)");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
-        // Main Background Dark
         getContentPane().setBackground(new Color(24, 24, 24));
         setLayout(new BorderLayout());
 
-        // --- 1. HEADER SECTION ---
+        // --- 1. HEADER ---
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(33, 150, 243)); // Pos Blue
+        headerPanel.setBackground(new Color(33, 150, 243)); 
         headerPanel.setPreferredSize(new Dimension(800, 70));
         headerPanel.setBorder(new EmptyBorder(10, 30, 10, 30));
 
@@ -34,8 +37,8 @@ public class NewSale extends JFrame {
         lblTitle.setForeground(Color.WHITE);
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
-        // Date/Time පෙන්නන්න තැනක් (පස්සේ හදමු)
-        JLabel lblDate = new JLabel("2025-12-27"); 
+        // Date Display
+        JLabel lblDate = new JLabel(java.time.LocalDate.now().toString()); 
         lblDate.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblDate.setForeground(new Color(240, 240, 240));
         headerPanel.add(lblDate, BorderLayout.EAST);
@@ -47,25 +50,22 @@ public class NewSale extends JFrame {
         leftPanel.setBackground(new Color(24, 24, 24));
         leftPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Top Input Bar
+        // Input Bar
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
-        inputPanel.setBackground(new Color(45, 45, 45)); // Slightly lighter dark
+        inputPanel.setBackground(new Color(45, 45, 45)); 
         inputPanel.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60), 1));
-        inputPanel.setPreferredSize(new Dimension(0, 80)); // Fixed height
+        inputPanel.setPreferredSize(new Dimension(0, 80));
 
-        // Product Input
         inputPanel.add(createLabel("Product ID / Name:"));
         txtProductID = createTextField(20);
         inputPanel.add(txtProductID);
 
-        // Qty Input
         inputPanel.add(createLabel("Qty:"));
         txtQty = createTextField(5);
         inputPanel.add(txtQty);
 
-        // Add Button
         JButton btnAdd = new JButton("ADD ITEM");
-        btnAdd.setBackground(new Color(46, 204, 113)); // Green
+        btnAdd.setBackground(new Color(46, 204, 113)); 
         btnAdd.setForeground(Color.WHITE);
         btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnAdd.setPreferredSize(new Dimension(120, 40));
@@ -75,24 +75,22 @@ public class NewSale extends JFrame {
 
         leftPanel.add(inputPanel, BorderLayout.NORTH);
 
-        // Table Area
+        // Table
         String[] columns = {"ID", "Product Name", "Price", "Qty", "Total"};
         cartModel = new DefaultTableModel(columns, 0);
-        
         cartTable = new JTable(cartModel);
-        cartTable.setRowHeight(40); // පේළි උස වැඩි කළා
+        cartTable.setRowHeight(40); 
         cartTable.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        cartTable.setShowVerticalLines(false); // Grid Lines අයින් කළා
+        cartTable.setShowVerticalLines(false); 
         cartTable.setIntercellSpacing(new Dimension(0, 0));
         
-        // Table Header Styling
+        // Table Header
         JTableHeader header = cartTable.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 16));
         header.setBackground(new Color(60, 60, 60));
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(0, 40));
 
-        // Center Align Cells
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
         centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         cartTable.setDefaultRenderer(Object.class, centerRenderer);
@@ -107,9 +105,9 @@ public class NewSale extends JFrame {
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setPreferredSize(new Dimension(400, 0));
         rightPanel.setBackground(new Color(30, 30, 30));
-        rightPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(60, 60, 60))); // වම් පැත්තෙන් ඉරක්
+        rightPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(60, 60, 60)));
 
-        // Total Display Area (Top of Right Panel)
+        // Total Display
         JPanel totalDisplayPanel = new JPanel(new GridLayout(2, 1));
         totalDisplayPanel.setBackground(new Color(30, 30, 30));
         totalDisplayPanel.setBorder(new EmptyBorder(30, 20, 30, 20));
@@ -120,33 +118,33 @@ public class NewSale extends JFrame {
         totalDisplayPanel.add(lblNetTotalTitle);
 
         lblTotal = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
-        lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 48)); // Huge Font
-        lblTotal.setForeground(new Color(46, 204, 113)); // Bright Green
+        lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 48)); 
+        lblTotal.setForeground(new Color(46, 204, 113)); 
         totalDisplayPanel.add(lblTotal);
 
         rightPanel.add(totalDisplayPanel, BorderLayout.NORTH);
 
-        // Payment Inputs (Center of Right Panel)
+        // Payment Inputs
         JPanel paymentInputPanel = new JPanel(new GridLayout(6, 1, 10, 10));
         paymentInputPanel.setBackground(new Color(30, 30, 30));
         paymentInputPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
 
         paymentInputPanel.add(createLabel("Cash Received (Rs):"));
         txtCash = createTextField(10);
-        txtCash.setFont(new Font("Segoe UI", Font.BOLD, 24)); // ලොකු ඉලක්කම්
+        txtCash.setFont(new Font("Segoe UI", Font.BOLD, 24)); 
         txtCash.setHorizontalAlignment(JTextField.RIGHT);
-        txtCash.setForeground(new Color(255, 193, 7)); // Gold Color Text
+        txtCash.setForeground(new Color(255, 193, 7)); 
         paymentInputPanel.add(txtCash);
 
         paymentInputPanel.add(createLabel("Balance (Rs):"));
         lblBalance = new JLabel("0.00", SwingConstants.RIGHT);
         lblBalance.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblBalance.setForeground(new Color(231, 76, 60)); // Red Color
+        lblBalance.setForeground(new Color(231, 76, 60)); 
         paymentInputPanel.add(lblBalance);
 
         rightPanel.add(paymentInputPanel, BorderLayout.CENTER);
 
-        // Action Buttons (Bottom of Right Panel)
+        // Buttons
         JPanel btnPanel = new JPanel(new GridLayout(2, 1, 10, 10));
         btnPanel.setBackground(new Color(30, 30, 30));
         btnPanel.setBorder(new EmptyBorder(20, 30, 30, 30));
@@ -170,9 +168,108 @@ public class NewSale extends JFrame {
         rightPanel.add(btnPanel, BorderLayout.SOUTH);
 
         add(rightPanel, BorderLayout.EAST);
+
+        // 🔥 --- FUNCTIONALITY (මෙතන තමයි වැඩ කෑලි) --- 🔥
+
+        // 1. ADD Button Action
+        btnAdd.addActionListener(e -> addItemToCart());
+
+        // 2. Remove Button Action
+        btnRemove.addActionListener(e -> {
+            int selectedRow = cartTable.getSelectedRow();
+            if (selectedRow != -1) {
+                cartModel.removeRow(selectedRow);
+                updateNetTotal(); // ගාන අඩු වෙන්න ඕනේ
+            } else {
+                Message.showError(this, "Please select an item to remove!");
+            }
+        });
+
+        // 3. Enter ගැහුවම වැඩ කරන්න (Shortcuts)
+        txtProductID.addActionListener(e -> txtQty.requestFocus()); // ID ගහලා Enter ගැහුවම Qty එකට යන්න
+        txtQty.addActionListener(e -> addItemToCart()); // Qty ගහලා Enter ගැහුවම Cart එකට යන්න
     }
 
-    // Helper method to create styled labels
+    // --- LOGIC METHODS ---
+
+    private void addItemToCart() {
+        String productId = txtProductID.getText();
+        String qtyStr = txtQty.getText();
+
+        if (productId.isEmpty() || qtyStr.isEmpty()) {
+            Message.showError(this, "Please enter Product ID/Name and Quantity!");
+            return;
+        }
+
+        try {
+            Connection conn = DBConnection.connect();
+            // ID එකෙන් හරි Name එකෙන් හරි Search කරනවා
+            String sql = "SELECT * FROM products WHERE id = ? OR name = ?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            
+            // ID එක නම් අංකයක් ද කියලා බලනවා, නැත්නම් නම කියලා හිතනවා
+            try {
+                int id = Integer.parseInt(productId);
+                pst.setInt(1, id);
+                pst.setString(2, ""); // නම හිස්ව තියනවා (ID මැච් වුනොත් ඇති)
+            } catch (NumberFormatException e) {
+                pst.setInt(1, 0); // ID එක 0 කරනවා
+                pst.setString(2, productId); // නම දානවා
+            }
+
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                // බඩු හම්බුනා!
+                String name = rs.getString("name");
+                double price = rs.getDouble("price");
+                int stock = rs.getInt("stock");
+                int qty = Integer.parseInt(qtyStr);
+
+                // Stock තියෙනවද බලනවා
+                if (stock >= qty) {
+                    double lineTotal = price * qty;
+
+                    // Table එකට දානවා
+                    Object[] row = {
+                        rs.getInt("id"),
+                        name,
+                        price,
+                        qty,
+                        lineTotal
+                    };
+                    cartModel.addRow(row);
+
+                    updateNetTotal(); // Total එක Update කරනවා
+                    
+                    // Inputs Clear කරනවා ඊළඟ බඩුව ගහන්න ලේසි වෙන්න
+                    txtProductID.setText("");
+                    txtQty.setText("");
+                    txtProductID.requestFocus(); 
+
+                } else {
+                    Message.showError(this, "Not enough stock! Available: " + stock);
+                }
+            } else {
+                Message.showError(this, "Product not found!");
+            }
+            conn.close();
+
+        } catch (Exception e) {
+            Message.showError(this, "Error: " + e.getMessage());
+        }
+    }
+
+    // Total එක හදන මැෂින් එක
+    private void updateNetTotal() {
+        netTotal = 0.0;
+        for (int i = 0; i < cartModel.getRowCount(); i++) {
+            netTotal += (double) cartModel.getValueAt(i, 4); // 4 වෙනි තීරුව (Total) එකතු කරනවා
+        }
+        lblTotal.setText(String.format("Rs. %.2f", netTotal));
+    }
+
+    // UI Helpers (Label & TextStyles)
     private JLabel createLabel(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.PLAIN, 16));
@@ -180,12 +277,10 @@ public class NewSale extends JFrame {
         return lbl;
     }
 
-    // Helper method to create styled text fields
     private JTextField createTextField(int columns) {
         JTextField txt = new JTextField(columns);
         txt.setFont(new Font("Segoe UI", Font.PLAIN, 16));
         txt.putClientProperty("JComponent.roundRect", true);
-        txt.putClientProperty("JTextField.placeholderText", "Type here...");
         return txt;
     }
 }
