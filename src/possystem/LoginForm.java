@@ -94,8 +94,8 @@ public class LoginForm extends JFrame {
                     String role = rs.getString("role");
                     
                     JOptionPane.showMessageDialog(this, "Login Successful! Welcome " + role + "!");
-                    this.dispose(); 
-                    new Dashboard().setVisible(true); 
+                    this.dispose();
+                    new Dashboard(role).setVisible(true); 
                     
                 } else {
 
