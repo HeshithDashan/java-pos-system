@@ -6,10 +6,9 @@ import java.net.URL;
 
 public class Dashboard extends JFrame {
 
-    // මෙතන String userRole කියලා අලුත් කෙනෙක්ව ගන්නවා
     public Dashboard(String userRole) {
         setTitle("Smart POS - Dashboard");
-        setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Full Screen
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -19,12 +18,11 @@ public class Dashboard extends JFrame {
         headerPanel.setPreferredSize(new Dimension(800, 90));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        // 🔥 Title එක Dynamic කළා (කවුද ලොග් වුනේ කියලා පෙන්නන්න)
-        // ex: SMART POS DASHBOARD (ADMIN)
-        JLabel lblTitle = new JLabel(" SMART POS - " + userRole.toUpperCase()); 
+        // Title
+        JLabel lblTitle = new JLabel(" SMART POS - " + userRole.toUpperCase());
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblTitle.setForeground(Color.WHITE);
-        
+
         try {
             URL iconURL = getClass().getResource("/icons/header.png");
             if (iconURL != null) {
@@ -36,15 +34,15 @@ public class Dashboard extends JFrame {
         } catch (Exception e) {
             System.out.println("Header icon error: " + e.getMessage());
         }
-        
+
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
-        // --- Logout Button ---
+        // Logout Button
         JButton btnLogout = new JButton("Logout");
         btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnLogout.putClientProperty("JButton.buttonType", "roundRect");
-        btnLogout.setBackground(new Color(244, 67, 54)); 
-        btnLogout.setForeground(Color.WHITE); 
+        btnLogout.setBackground(new Color(244, 67, 54));
+        btnLogout.setForeground(Color.WHITE);
         btnLogout.setPreferredSize(new Dimension(120, 45));
 
         headerPanel.add(btnLogout, BorderLayout.EAST);
@@ -54,12 +52,14 @@ public class Dashboard extends JFrame {
         JPanel menuPanel = new JPanel(new GridLayout(2, 3, 30, 30));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
-        // 🟢 හැමෝටම පේන බට්න් ටික (Common Buttons)
         menuPanel.add(createMenuButton("New Sale", "sale.png"));
-        menuPanel.add(createMenuButton("Products", "product.png"));
+        
+        // 🔥 මෙන්න මෙතන නම "Products" කියලා තියෙන්නේ
+        menuPanel.add(createMenuButton("Products", "product.png")); 
+        
         menuPanel.add(createMenuButton("Customers", "customer.png"));
 
-        // 🔒 Admin ට විතරක් පේන බට්න් ටික (Restricted Buttons)
+        // Admin බට්න් ටික
         if (userRole.equalsIgnoreCase("admin")) {
             menuPanel.add(createMenuButton("Reports", "report.png"));
             menuPanel.add(createMenuButton("Settings", "settings.png"));
@@ -68,7 +68,7 @@ public class Dashboard extends JFrame {
 
         add(menuPanel, BorderLayout.CENTER);
 
-        // --- Logout Logic ---
+        // Logout Logic
         btnLogout.addActionListener(e -> {
             int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (choice == JOptionPane.YES_OPTION) {
@@ -85,7 +85,7 @@ public class Dashboard extends JFrame {
         btn.putClientProperty("JButton.buttonType", "roundRect");
 
         try {
-            URL iconURL = getClass().getResource("/icons/" + iconName);
+            java.net.URL iconURL = getClass().getResource("/icons/" + iconName);
             if (iconURL != null) {
                 ImageIcon originalIcon = new ImageIcon(iconURL);
                 Image img = originalIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
@@ -96,7 +96,17 @@ public class Dashboard extends JFrame {
 
         btn.setHorizontalTextPosition(SwingConstants.CENTER);
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
-        btn.setIconTextGap(15); 
+        btn.setIconTextGap(15);
+
+        // 🔥 Button Click Logic (මෙතනයි අපි වෙනස කළේ)
+        btn.addActionListener(e -> {
+            // දැන් "Products" හෝ "Manage Products" කියන නම් දෙකටම මේක වැඩ කරනවා
+            if (text.equals("Products") || text.equals("Manage Products")) {
+                new ProductManagement().setVisible(true);
+            }
+            
+            // ඉස්සරහට අනිත් බට්න් වලටත් (Customers, Sales) කෝඩ් ලියන්න වෙන්නේ මෙතනටමයි
+        });
 
         return btn;
     }
