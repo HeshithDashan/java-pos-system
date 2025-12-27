@@ -93,19 +93,19 @@ public class LoginForm extends JFrame {
 
                     String role = rs.getString("role");
                     
-                    JOptionPane.showMessageDialog(this, "Login Successful! Welcome " + role + "!");
+                    Message.showSuccess(this, "Login Successful! Welcome " + role + "!");
                     this.dispose();
                     new Dashboard(role).setVisible(true); 
                     
                 } else {
 
-                    JOptionPane.showMessageDialog(this, "Invalid Username or Password!", "Login Error", JOptionPane.ERROR_MESSAGE);
+                    Message.showError(this, "Invalid Username or Password!");
                 }
                 
                 conn.close(); 
                 
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Database Error: " + ex.getMessage());
+                Message.showError(this, "Database Error: " + ex.getMessage());
             }
         });
 

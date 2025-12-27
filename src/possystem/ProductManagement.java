@@ -17,21 +17,19 @@ public class ProductManagement extends JFrame {
     public ProductManagement() {
         setTitle("Manage Products");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // මේක වැහුවම Main App එක වැහෙන්න බෑ
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-        // --- 1. Header ---
         JLabel lblHeader = new JLabel("📦 PRODUCT INVENTORY", SwingConstants.CENTER);
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblHeader.setForeground(new Color(33, 150, 243));
         lblHeader.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(lblHeader, BorderLayout.NORTH);
 
-        // --- 2. Input Form (Left Side) ---
         JPanel inputPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Add / Edit Product"));
-        inputPanel.setPreferredSize(new Dimension(300, 0)); // වම් පැත්තට 300px ඉඩක්
+        inputPanel.setPreferredSize(new Dimension(300, 0)); 
 
         inputPanel.add(new JLabel("Product Name:"));
         txtName = new JTextField();
@@ -45,13 +43,12 @@ public class ProductManagement extends JFrame {
         txtStock = new JTextField();
         inputPanel.add(txtStock);
 
-        // Buttons
         JButton btnAdd = new JButton("Add");
-        btnAdd.setBackground(new Color(46, 204, 113)); // Green
+        btnAdd.setBackground(new Color(46, 204, 113)); 
         btnAdd.setForeground(Color.WHITE);
         
         JButton btnDelete = new JButton("Delete");
-        btnDelete.setBackground(new Color(231, 76, 60)); // Red
+        btnDelete.setBackground(new Color(231, 76, 60)); 
         btnDelete.setForeground(Color.WHITE);
 
         inputPanel.add(btnAdd);
@@ -62,8 +59,6 @@ public class ProductManagement extends JFrame {
         westPanel.add(inputPanel, BorderLayout.NORTH);
         add(westPanel, BorderLayout.WEST);
 
-        // --- 3. Table (Center) ---
-        // Table එකේ තීරු (Columns)
         String[] columns = {"ID", "Name", "Price", "Stock"};
         tableModel = new DefaultTableModel(columns, 0);
         productTable = new JTable(tableModel);
@@ -73,24 +68,20 @@ public class ProductManagement extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(scrollPane, BorderLayout.CENTER);
 
-        // --- 4. Logic (Buttons & Data Loading) ---
-        loadProducts(); // ඇප් එක පටන් ගන්නකොටම Data ටික පෙන්නන්න
+        loadProducts(); 
 
-        // Add Button Action
         btnAdd.addActionListener(e -> {
             addProduct();
         });
 
-        // Delete Button Action
         btnDelete.addActionListener(e -> {
             deleteProduct();
         });
     }
 
-    // --- Method 1: Database එකෙන් බඩු ටික ගෙනත් Table එකට දාන හැටි ---
     private void loadProducts() {
         try {
-            tableModel.setRowCount(0); // මුලින්ම Table එක හිස් කරනවා
+            tableModel.setRowCount(0); 
             Connection conn = DBConnection.connect();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM products");
@@ -110,7 +101,6 @@ public class ProductManagement extends JFrame {
         }
     }
 
-    // --- Method 2: අලුත් බඩුවක් ඇතුල් කිරීම ---
     private void addProduct() {
         String name = txtName.getText();
         String price = txtPrice.getText();
@@ -134,19 +124,17 @@ public class ProductManagement extends JFrame {
             
             JOptionPane.showMessageDialog(this, "Product Added Successfully! ✅");
             
-            // Text boxes හිස් කරන්න
             txtName.setText("");
             txtPrice.setText("");
             txtStock.setText("");
             
-            loadProducts(); // Table එක Refresh කරන්න
+            loadProducts(); 
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error adding product: " + e.getMessage());
         }
     }
 
-    // --- Method 3: බඩුවක් මකන හැටි ---
     private void deleteProduct() {
         int selectedRow = productTable.getSelectedRow();
         if (selectedRow == -1) {
@@ -154,7 +142,6 @@ public class ProductManagement extends JFrame {
             return;
         }
 
-        // Table එකේ තෝරපු පේළියේ ID එක ගන්නවා (Column 0)
         int id = (int) tableModel.getValueAt(selectedRow, 0);
 
         int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this?", "Confirm", JOptionPane.YES_NO_OPTION);

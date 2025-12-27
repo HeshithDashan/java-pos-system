@@ -8,17 +8,15 @@ public class Dashboard extends JFrame {
 
     public Dashboard(String userRole) {
         setTitle("Smart POS - Dashboard");
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Full Screen
+        setExtendedState(JFrame.MAXIMIZED_BOTH); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // --- 1. Header Panel ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(33, 150, 243));
         headerPanel.setPreferredSize(new Dimension(800, 90));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
-        // Title
         JLabel lblTitle = new JLabel(" SMART POS - " + userRole.toUpperCase());
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblTitle.setForeground(Color.WHITE);
@@ -37,7 +35,6 @@ public class Dashboard extends JFrame {
 
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
-        // Logout Button
         JButton btnLogout = new JButton("Logout");
         btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 16));
         btnLogout.putClientProperty("JButton.buttonType", "roundRect");
@@ -48,18 +45,15 @@ public class Dashboard extends JFrame {
         headerPanel.add(btnLogout, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- 2. Menu Buttons Grid ---
         JPanel menuPanel = new JPanel(new GridLayout(2, 3, 30, 30));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
         menuPanel.add(createMenuButton("New Sale", "sale.png"));
         
-        // 🔥 මෙන්න මෙතන නම "Products" කියලා තියෙන්නේ
         menuPanel.add(createMenuButton("Products", "product.png")); 
         
         menuPanel.add(createMenuButton("Customers", "customer.png"));
 
-        // Admin බට්න් ටික
         if (userRole.equalsIgnoreCase("admin")) {
             menuPanel.add(createMenuButton("Reports", "report.png"));
             menuPanel.add(createMenuButton("Settings", "settings.png"));
@@ -68,7 +62,6 @@ public class Dashboard extends JFrame {
 
         add(menuPanel, BorderLayout.CENTER);
 
-        // Logout Logic
         btnLogout.addActionListener(e -> {
             int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (choice == JOptionPane.YES_OPTION) {
@@ -98,14 +91,11 @@ public class Dashboard extends JFrame {
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setIconTextGap(15);
 
-        // 🔥 Button Click Logic (මෙතනයි අපි වෙනස කළේ)
         btn.addActionListener(e -> {
-            // දැන් "Products" හෝ "Manage Products" කියන නම් දෙකටම මේක වැඩ කරනවා
             if (text.equals("Products") || text.equals("Manage Products")) {
                 new ProductManagement().setVisible(true);
             }
             
-            // ඉස්සරහට අනිත් බට්න් වලටත් (Customers, Sales) කෝඩ් ලියන්න වෙන්නේ මෙතනටමයි
         });
 
         return btn;
