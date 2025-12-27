@@ -17,19 +17,21 @@ public class ProductManagement extends JFrame {
     public ProductManagement() {
         setTitle("Manage Products");
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); 
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
+        // --- Header ---
         JLabel lblHeader = new JLabel("📦 PRODUCT INVENTORY", SwingConstants.CENTER);
         lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblHeader.setForeground(new Color(33, 150, 243));
         lblHeader.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(lblHeader, BorderLayout.NORTH);
 
+        // --- Input Panel ---
         JPanel inputPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         inputPanel.setBorder(BorderFactory.createTitledBorder("Add / Edit Product"));
-        inputPanel.setPreferredSize(new Dimension(300, 0)); 
+        inputPanel.setPreferredSize(new Dimension(300, 0));
 
         inputPanel.add(new JLabel("Product Name:"));
         txtName = new JTextField();
@@ -44,11 +46,11 @@ public class ProductManagement extends JFrame {
         inputPanel.add(txtStock);
 
         JButton btnAdd = new JButton("Add");
-        btnAdd.setBackground(new Color(46, 204, 113)); 
+        btnAdd.setBackground(new Color(46, 204, 113));
         btnAdd.setForeground(Color.WHITE);
         
         JButton btnDelete = new JButton("Delete");
-        btnDelete.setBackground(new Color(231, 76, 60)); 
+        btnDelete.setBackground(new Color(231, 76, 60));
         btnDelete.setForeground(Color.WHITE);
 
         inputPanel.add(btnAdd);
@@ -59,6 +61,7 @@ public class ProductManagement extends JFrame {
         westPanel.add(inputPanel, BorderLayout.NORTH);
         add(westPanel, BorderLayout.WEST);
 
+        // --- Table ---
         String[] columns = {"ID", "Name", "Price", "Stock"};
         tableModel = new DefaultTableModel(columns, 0);
         productTable = new JTable(tableModel);
@@ -68,20 +71,15 @@ public class ProductManagement extends JFrame {
         scrollPane.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(scrollPane, BorderLayout.CENTER);
 
-        loadProducts(); 
+        loadProducts();
 
-        btnAdd.addActionListener(e -> {
-            addProduct();
-        });
-
-        btnDelete.addActionListener(e -> {
-            deleteProduct();
-        });
+        btnAdd.addActionListener(e -> addProduct());
+        btnDelete.addActionListener(e -> deleteProduct());
     }
 
     private void loadProducts() {
         try {
-            tableModel.setRowCount(0); 
+            tableModel.setRowCount(0);
             Connection conn = DBConnection.connect();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery("SELECT * FROM products");
@@ -97,7 +95,7 @@ public class ProductManagement extends JFrame {
             }
             conn.close();
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading data: " + e.getMessage());
+            Message.showError(this, "Error loading data: " + e.getMessage());
         }
     }
 
@@ -107,7 +105,7 @@ public class ProductManagement extends JFrame {
         String stock = txtStock.getText();
 
         if (name.isEmpty() || price.isEmpty() || stock.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill all fields!");
+            Message.showError(this, "Please fill all fields!");
             return;
         }
 
@@ -122,30 +120,31 @@ public class ProductManagement extends JFrame {
             pst.executeUpdate();
             conn.close();
             
-            JOptionPane.showMessageDialog(this, "Product Added Successfully! ✅");
+            // 🔥 අලුත් Success Message එක
+            Message.showSuccess(this, "Product Added Successfully!");
             
             txtName.setText("");
             txtPrice.setText("");
             txtStock.setText("");
             
-            loadProducts(); 
+            loadProducts();
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error adding product: " + e.getMessage());
+            Message.showError(this, "Error adding product: " + e.getMessage());
         }
     }
 
     private void deleteProduct() {
         int selectedRow = productTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a product to delete!");
+            Message.showError(this, "Please select a product to delete!");
             return;
         }
 
         int id = (int) tableModel.getValueAt(selectedRow, 0);
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this?", "Confirm", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
+        // 🔥 මෙන්න අලුත් Confirm Dialog එක (Yes/No Icon එකත් එක්ක)
+        if (Message.showConfirm(this, "Are you sure you want to delete this product?")) {
             try {
                 Connection conn = DBConnection.connect();
                 PreparedStatement pst = conn.prepareStatement("DELETE FROM products WHERE id=?");
@@ -153,11 +152,12 @@ public class ProductManagement extends JFrame {
                 pst.executeUpdate();
                 conn.close();
                 
-                JOptionPane.showMessageDialog(this, "Deleted Successfully! 🗑️");
+                // 🔥 අලුත් Success Message එක
+                Message.showSuccess(this, "Deleted Successfully!");
                 loadProducts();
 
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error deleting: " + e.getMessage());
+                Message.showError(this, "Error deleting: " + e.getMessage());
             }
         }
     }

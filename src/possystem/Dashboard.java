@@ -63,8 +63,7 @@ public class Dashboard extends JFrame {
         add(menuPanel, BorderLayout.CENTER);
 
         btnLogout.addActionListener(e -> {
-            int choice = JOptionPane.showConfirmDialog(this, "Are you sure you want to logout?", "Confirm Logout", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-            if (choice == JOptionPane.YES_OPTION) {
+            if (Message.showConfirm(this, "Are you sure you want to logout?")) {
                 this.dispose();
                 new LoginForm().setVisible(true);
             }
