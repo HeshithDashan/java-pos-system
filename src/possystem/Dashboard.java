@@ -99,6 +99,10 @@ public class Dashboard extends JFrame {
             else if (text.contains("Customers")) {
                 new CustomerManagement().setVisible(true);
             }
+            
+            else if (text.contains("Reports")) {
+                new Reports().setVisible(true);
+            }
         });
 
         return btn;
