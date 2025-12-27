@@ -11,31 +11,25 @@ public class LoginForm extends JFrame {
 
     public LoginForm() {
         setTitle("POS System Login");
-        setSize(400, 450); // Fixed Size
+        setSize(400, 450); 
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
-        // Main Layout
         setLayout(new BorderLayout());
 
-        // --- 🔥 HEADER (Simple & Clean) ---
-        // Background Box එක අයින් කළා. Text එකට විතරක් පාට දැම්මා.
         JLabel lblHeader = new JLabel(" SMART POS", SwingConstants.CENTER);
-        lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 30)); // අකුරු තව ටිකක් ලොකු කළා
-        lblHeader.setForeground(new Color(33, 150, 243)); // ලස්සන නිල් පාට Text එකක්
-        lblHeader.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0)); // උඩින් පොඩි ඉඩක්
+        lblHeader.setFont(new Font("Segoe UI", Font.BOLD, 30)); 
+        lblHeader.setForeground(new Color(33, 150, 243)); 
+        lblHeader.setBorder(BorderFactory.createEmptyBorder(30, 0, 10, 0));
         
         add(lblHeader, BorderLayout.NORTH);
-        // ----------------------------------
 
-        // --- Form Panel ---
         JPanel mainContentPanel = new JPanel(new BorderLayout(10, 10));
-        mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 30, 40)); // වටේට ඉඩ
+        mainContentPanel.setBorder(BorderFactory.createEmptyBorder(20, 40, 30, 40)); 
 
-        JPanel formPanel = new JPanel(new GridLayout(4, 1, 10, 10)); // පේළි අතර ඉඩ 10ක් කළා
+        JPanel formPanel = new JPanel(new GridLayout(4, 1, 10, 10));
         
-        // Username
         JLabel lblUser = new JLabel("Username");
         lblUser.setFont(new Font("Segoe UI", Font.BOLD, 16)); 
         formPanel.add(lblUser);
@@ -47,7 +41,6 @@ public class LoginForm extends JFrame {
         txtUsername.setPreferredSize(new Dimension(100, 40)); 
         formPanel.add(txtUsername);
 
-        // Password
         JLabel lblPass = new JLabel("Password");
         lblPass.setFont(new Font("Segoe UI", Font.BOLD, 16));
         formPanel.add(lblPass);
@@ -62,7 +55,6 @@ public class LoginForm extends JFrame {
 
         mainContentPanel.add(formPanel, BorderLayout.CENTER);
 
-        // --- Button Panel ---
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         
         btnLogin = new JButton("Login");
@@ -86,7 +78,6 @@ public class LoginForm extends JFrame {
         
         add(mainContentPanel, BorderLayout.CENTER);
 
-        // --- Logic ---
         btnLogin.addActionListener(e -> {
             String username = txtUsername.getText();
             String password = new String(txtPassword.getPassword());
