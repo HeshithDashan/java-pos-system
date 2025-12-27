@@ -11,7 +11,6 @@ import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-// 🔥 අලුතෙන් එකතු කළ Printing Imports ටික
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.awt.print.Printable;
@@ -33,7 +32,6 @@ public class NewSale extends JFrame {
         getContentPane().setBackground(new Color(24, 24, 24));
         setLayout(new BorderLayout());
 
-        // --- Header ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(33, 150, 243)); 
         headerPanel.setPreferredSize(new Dimension(800, 70));
@@ -51,7 +49,6 @@ public class NewSale extends JFrame {
 
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- Left Panel ---
         JPanel leftPanel = new JPanel(new BorderLayout(20, 20));
         leftPanel.setBackground(new Color(24, 24, 24));
         leftPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -104,7 +101,6 @@ public class NewSale extends JFrame {
 
         add(leftPanel, BorderLayout.CENTER);
 
-        // --- Right Panel ---
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setPreferredSize(new Dimension(400, 0));
         rightPanel.setBackground(new Color(30, 30, 30));
@@ -169,7 +165,6 @@ public class NewSale extends JFrame {
 
         add(rightPanel, BorderLayout.EAST);
 
-        // --- Actions ---
         btnAdd.addActionListener(e -> addItemToCart());
 
         btnRemove.addActionListener(e -> {
@@ -300,13 +295,10 @@ public class NewSale extends JFrame {
             
             conn.close();
 
-            // ✅ Success Message
             Message.showSuccess(this, "Bill Paid & Printing... 🖨️");
             
-            // 🔥 Print Bill Function called here
             printBill();
 
-            // Clear Data
             cartModel.setRowCount(0);
             updateNetTotal();
             txtCash.setText("");
@@ -319,7 +311,6 @@ public class NewSale extends JFrame {
         }
     }
 
-    // 🔥 THERMAL BILL PRINTING LOGIC
     private void printBill() {
         PrinterJob pj = PrinterJob.getPrinterJob();
         
@@ -333,7 +324,6 @@ public class NewSale extends JFrame {
                 int y = 20; 
                 int x = 10; 
 
-                // Header
                 g2d.setFont(new Font("Monospaced", Font.BOLD, 12));
                 g2d.drawString("      SMART POS SYSTEM      ", x, y); y += 15;
                 g2d.setFont(new Font("Monospaced", Font.PLAIN, 10));
@@ -342,18 +332,16 @@ public class NewSale extends JFrame {
                 g2d.drawString("Date: " + java.time.LocalDate.now(), x, y); y += 12;
                 g2d.drawString("-------------------------------------", x, y); y += 12;
                 
-                // Columns
                 g2d.drawString("Item          Qty   Price   Total", x, y); y += 12;
                 g2d.drawString("-------------------------------------", x, y); y += 15;
 
-                // Items
                 for (int i = 0; i < cartModel.getRowCount(); i++) {
                     String name = cartModel.getValueAt(i, 1).toString();
                     String qty = cartModel.getValueAt(i, 3).toString();
                     String price = cartModel.getValueAt(i, 2).toString();
                     String total = cartModel.getValueAt(i, 4).toString();
 
-                    if (name.length() > 12) name = name.substring(0, 12); // Shorten long names
+                    if (name.length() > 12) name = name.substring(0, 12); 
 
                     g2d.drawString(String.format("%-12s %3s %7s %7s", name, qty, price, total), x, y);
                     y += 15;
@@ -361,13 +349,11 @@ public class NewSale extends JFrame {
 
                 g2d.drawString("-------------------------------------", x, y); y += 15;
 
-                // Totals
                 g2d.setFont(new Font("Monospaced", Font.BOLD, 12));
                 g2d.drawString("Net Total :       Rs. " + lblTotal.getText().replace("Rs. ", ""), x, y); y += 15;
                 g2d.drawString("Cash      :       Rs. " + txtCash.getText(), x, y); y += 15;
                 g2d.drawString("Balance   :       Rs. " + lblBalance.getText(), x, y); y += 25;
 
-                // Footer
                 g2d.setFont(new Font("Monospaced", Font.ITALIC, 10));
                 g2d.drawString("      Thank You! Come Again!     ", x, y); y += 12;
 
