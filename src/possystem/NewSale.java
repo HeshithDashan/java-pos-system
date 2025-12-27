@@ -11,6 +11,11 @@ import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+// 🔥 අලුතෙන් එකතු කළ Printing Imports ටික
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.awt.print.Printable;
+import java.awt.print.PageFormat;
 
 public class NewSale extends JFrame {
 
@@ -28,7 +33,7 @@ public class NewSale extends JFrame {
         getContentPane().setBackground(new Color(24, 24, 24));
         setLayout(new BorderLayout());
 
-        // --- 1. HEADER ---
+        // --- Header ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(33, 150, 243)); 
         headerPanel.setPreferredSize(new Dimension(800, 70));
@@ -46,12 +51,11 @@ public class NewSale extends JFrame {
 
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- 2. LEFT PANEL (Cart & Inputs) ---
+        // --- Left Panel ---
         JPanel leftPanel = new JPanel(new BorderLayout(20, 20));
         leftPanel.setBackground(new Color(24, 24, 24));
         leftPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        // Input Bar
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         inputPanel.setBackground(new Color(45, 45, 45)); 
         inputPanel.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60), 1));
@@ -76,7 +80,6 @@ public class NewSale extends JFrame {
 
         leftPanel.add(inputPanel, BorderLayout.NORTH);
 
-        // Table
         String[] columns = {"ID", "Product Name", "Price", "Qty", "Total"};
         cartModel = new DefaultTableModel(columns, 0);
         cartTable = new JTable(cartModel);
@@ -85,7 +88,6 @@ public class NewSale extends JFrame {
         cartTable.setShowVerticalLines(false); 
         cartTable.setIntercellSpacing(new Dimension(0, 0));
         
-        // Table Header
         JTableHeader header = cartTable.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 16));
         header.setBackground(new Color(60, 60, 60));
@@ -102,13 +104,12 @@ public class NewSale extends JFrame {
 
         add(leftPanel, BorderLayout.CENTER);
 
-        // --- 3. RIGHT PANEL (Payment) ---
+        // --- Right Panel ---
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setPreferredSize(new Dimension(400, 0));
         rightPanel.setBackground(new Color(30, 30, 30));
         rightPanel.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, new Color(60, 60, 60)));
 
-        // Total Display
         JPanel totalDisplayPanel = new JPanel(new GridLayout(2, 1));
         totalDisplayPanel.setBackground(new Color(30, 30, 30));
         totalDisplayPanel.setBorder(new EmptyBorder(30, 20, 30, 20));
@@ -125,7 +126,6 @@ public class NewSale extends JFrame {
 
         rightPanel.add(totalDisplayPanel, BorderLayout.NORTH);
 
-        // Payment Inputs
         JPanel paymentInputPanel = new JPanel(new GridLayout(6, 1, 10, 10));
         paymentInputPanel.setBackground(new Color(30, 30, 30));
         paymentInputPanel.setBorder(new EmptyBorder(20, 30, 20, 30));
@@ -145,7 +145,6 @@ public class NewSale extends JFrame {
 
         rightPanel.add(paymentInputPanel, BorderLayout.CENTER);
 
-        // Buttons
         JPanel btnPanel = new JPanel(new GridLayout(2, 1, 10, 10));
         btnPanel.setBackground(new Color(30, 30, 30));
         btnPanel.setBorder(new EmptyBorder(20, 30, 30, 30));
@@ -170,39 +169,31 @@ public class NewSale extends JFrame {
 
         add(rightPanel, BorderLayout.EAST);
 
-        // 🔥 --- FUNCTIONALITY --- 🔥
-
-        // 1. ADD Item Logic
+        // --- Actions ---
         btnAdd.addActionListener(e -> addItemToCart());
 
-        // 2. Remove Item Logic
         btnRemove.addActionListener(e -> {
             int selectedRow = cartTable.getSelectedRow();
             if (selectedRow != -1) {
                 cartModel.removeRow(selectedRow);
                 updateNetTotal(); 
-                calculateBalance(); // බඩු අයින් කරාමත් Balance එක වෙනස් වෙනවා
+                calculateBalance(); 
             } else {
                 Message.showError(this, "Please select an item to remove!");
             }
         });
 
-        // 3. Shortcuts (Enter Key)
         txtProductID.addActionListener(e -> txtQty.requestFocus()); 
         txtQty.addActionListener(e -> addItemToCart()); 
 
-        // 4. 🔥 Auto Balance Calculation (සල්ලි ගහනකොටම Balance එක හැදෙනවා)
         txtCash.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
                 calculateBalance();
             }
         });
 
-        // 5. 🔥 PAY Logic (Stock Update)
         btnPay.addActionListener(e -> payAndPrint());
     }
-
-    // --- LOGIC METHODS ---
 
     private void addItemToCart() {
         String productId = txtProductID.getText();
@@ -256,17 +247,15 @@ public class NewSale extends JFrame {
         }
     }
 
-    // Total එක හදන මැෂින් එක
     private void updateNetTotal() {
         netTotal = 0.0;
         for (int i = 0; i < cartModel.getRowCount(); i++) {
             netTotal += (double) cartModel.getValueAt(i, 4); 
         }
         lblTotal.setText(String.format("Rs. %.2f", netTotal));
-        calculateBalance(); // Total වෙනස් වුනාම Balance එකත් වෙනස් වෙනවා
+        calculateBalance(); 
     }
 
-    // 🔥 Balance එක හදන මැෂින් එක
     private void calculateBalance() {
         try {
             double cash = Double.parseDouble(txtCash.getText());
@@ -274,16 +263,15 @@ public class NewSale extends JFrame {
             lblBalance.setText(String.format("%.2f", balance));
             
             if (balance < 0) {
-                lblBalance.setForeground(new Color(231, 76, 60)); // මදි නම් රතු පාට
+                lblBalance.setForeground(new Color(231, 76, 60)); 
             } else {
-                lblBalance.setForeground(new Color(46, 204, 113)); // ඉතුරු නම් කොළ පාට
+                lblBalance.setForeground(new Color(46, 204, 113)); 
             }
         } catch (NumberFormatException e) {
             lblBalance.setText("0.00");
         }
     }
 
-    // 🔥 සල්ලි ගෙවලා බඩු අඩු කරන එක
     private void payAndPrint() {
         if (cartModel.getRowCount() == 0) {
             Message.showError(this, "Cart is empty!");
@@ -297,26 +285,28 @@ public class NewSale extends JFrame {
                 return;
             }
 
-            // Database Stock Update Loop
             Connection conn = DBConnection.connect();
             String updateSql = "UPDATE products SET stock = stock - ? WHERE id = ?";
             PreparedStatement pst = conn.prepareStatement(updateSql);
 
             for (int i = 0; i < cartModel.getRowCount(); i++) {
-                int id = (int) cartModel.getValueAt(i, 0); // ID
-                int qty = (int) cartModel.getValueAt(i, 3); // Qty
+                int id = (int) cartModel.getValueAt(i, 0); 
+                int qty = (int) cartModel.getValueAt(i, 3); 
 
                 pst.setInt(1, qty);
                 pst.setInt(2, id);
-                pst.executeUpdate(); // Update Stock
+                pst.executeUpdate(); 
             }
             
             conn.close();
 
-            // Success Message
-            Message.showSuccess(this, "Bill Paid & Printed Successfully! ✅");
+            // ✅ Success Message
+            Message.showSuccess(this, "Bill Paid & Printing... 🖨️");
             
-            // Clear Everything
+            // 🔥 Print Bill Function called here
+            printBill();
+
+            // Clear Data
             cartModel.setRowCount(0);
             updateNetTotal();
             txtCash.setText("");
@@ -329,7 +319,72 @@ public class NewSale extends JFrame {
         }
     }
 
-    // UI Helpers
+    // 🔥 THERMAL BILL PRINTING LOGIC
+    private void printBill() {
+        PrinterJob pj = PrinterJob.getPrinterJob();
+        
+        pj.setPrintable(new Printable() {
+            public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+                if (pageIndex > 0) return NO_SUCH_PAGE;
+
+                Graphics2D g2d = (Graphics2D) graphics;
+                g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+                int y = 20; 
+                int x = 10; 
+
+                // Header
+                g2d.setFont(new Font("Monospaced", Font.BOLD, 12));
+                g2d.drawString("      SMART POS SYSTEM      ", x, y); y += 15;
+                g2d.setFont(new Font("Monospaced", Font.PLAIN, 10));
+                g2d.drawString("    No 123, Galle Road,     ", x, y); y += 12;
+                g2d.drawString("        Colombo 03.         ", x, y); y += 12;
+                g2d.drawString("Date: " + java.time.LocalDate.now(), x, y); y += 12;
+                g2d.drawString("-------------------------------------", x, y); y += 12;
+                
+                // Columns
+                g2d.drawString("Item          Qty   Price   Total", x, y); y += 12;
+                g2d.drawString("-------------------------------------", x, y); y += 15;
+
+                // Items
+                for (int i = 0; i < cartModel.getRowCount(); i++) {
+                    String name = cartModel.getValueAt(i, 1).toString();
+                    String qty = cartModel.getValueAt(i, 3).toString();
+                    String price = cartModel.getValueAt(i, 2).toString();
+                    String total = cartModel.getValueAt(i, 4).toString();
+
+                    if (name.length() > 12) name = name.substring(0, 12); // Shorten long names
+
+                    g2d.drawString(String.format("%-12s %3s %7s %7s", name, qty, price, total), x, y);
+                    y += 15;
+                }
+
+                g2d.drawString("-------------------------------------", x, y); y += 15;
+
+                // Totals
+                g2d.setFont(new Font("Monospaced", Font.BOLD, 12));
+                g2d.drawString("Net Total :       Rs. " + lblTotal.getText().replace("Rs. ", ""), x, y); y += 15;
+                g2d.drawString("Cash      :       Rs. " + txtCash.getText(), x, y); y += 15;
+                g2d.drawString("Balance   :       Rs. " + lblBalance.getText(), x, y); y += 25;
+
+                // Footer
+                g2d.setFont(new Font("Monospaced", Font.ITALIC, 10));
+                g2d.drawString("      Thank You! Come Again!     ", x, y); y += 12;
+
+                return PAGE_EXISTS;
+            }
+        });
+
+        boolean doPrint = pj.printDialog();
+        if (doPrint) {
+            try {
+                pj.print();
+            } catch (PrinterException e) {
+                Message.showError(NewSale.this, "Printing Failed: " + e.getMessage());
+            }
+        }
+    }
+
     private JLabel createLabel(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.PLAIN, 16));
