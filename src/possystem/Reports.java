@@ -16,37 +16,46 @@ public class Reports extends JFrame {
 
     public Reports() {
         setTitle("Sales Reports");
-        setSize(1000, 700); // Window එක ටිකක් ලොකු කළා
+        setSize(1000, 700);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(new Color(24, 24, 24));
         setLayout(new BorderLayout(10, 10));
 
-        // --- 1. Header Section ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(33, 150, 243));
         headerPanel.setPreferredSize(new Dimension(1000, 60));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        JLabel lblTitle = new JLabel("📊 SALES HISTORY");
+        JLabel lblTitle = new JLabel(" SALES HISTORY");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
+
+        try {
+            java.net.URL iconURL = getClass().getResource("/icons/report.png");
+            if (iconURL != null) {
+                ImageIcon icon = new ImageIcon(iconURL);
+                Image img = icon.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
+                lblTitle.setIcon(new ImageIcon(img));
+                lblTitle.setIconTextGap(15);
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading icon");
+        }
+
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
         lblTotalSales = new JLabel("Total Revenue: Rs. 0.00");
         lblTotalSales.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTotalSales.setForeground(Color.YELLOW); // කැපී පේන්න
+        lblTotalSales.setForeground(Color.YELLOW);
         headerPanel.add(lblTotalSales, BorderLayout.EAST);
 
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- 2. Main Content (Split View) ---
-        // උඩින් Sales Table එක, යටින් Items Table එක
         JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerLocation(350); // උඩ කොටසේ උස
+        splitPane.setDividerLocation(350);
         splitPane.setResizeWeight(0.5);
         
-        // --- TOP TABLE (Sales List) ---
         JPanel panelSales = new JPanel(new BorderLayout());
         panelSales.setBorder(BorderFactory.createTitledBorder(null, "Step 1: Select a Bill", 0, 0, new Font("Segoe UI", Font.BOLD, 14), Color.WHITE));
         panelSales.setBackground(new Color(24, 24, 24));
@@ -60,7 +69,6 @@ public class Reports extends JFrame {
         panelSales.add(new JScrollPane(tableSales), BorderLayout.CENTER);
         splitPane.setTopComponent(panelSales);
 
-        // --- BOTTOM TABLE (Items List) ---
         JPanel panelItems = new JPanel(new BorderLayout());
         panelItems.setBorder(BorderFactory.createTitledBorder(null, "Step 2: Bill Items", 0, 0, new Font("Segoe UI", Font.BOLD, 14), Color.WHITE));
         panelItems.setBackground(new Color(24, 24, 24));
@@ -76,11 +84,8 @@ public class Reports extends JFrame {
 
         add(splitPane, BorderLayout.CENTER);
 
-        // --- Load Data ---
         loadSales();
 
-        // --- Event Listener (Click on Sales Table) ---
-        // බිල් එකක් උඩ Click කරාම යට Table එක Update වෙනවා
         tableSales.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tableSales.getSelectedRow() != -1) {
                 int saleId = (int) tableSales.getValueAt(tableSales.getSelectedRow(), 0);
@@ -89,13 +94,12 @@ public class Reports extends JFrame {
         });
     }
 
-    // 1. ඔක්කොම බිල් ටික පූරවනවා
     private void loadSales() {
         try {
             modelSales.setRowCount(0);
             Connection conn = DBConnection.connect();
             Statement stmt = conn.createStatement();
-            // අලුත් බිල් උඩින්ම පේන්න (ORDER BY id DESC)
+
             ResultSet rs = stmt.executeQuery("SELECT * FROM sales ORDER BY id DESC");
 
             double totalRevenue = 0;
@@ -115,7 +119,6 @@ public class Reports extends JFrame {
             }
             conn.close();
             
-            // මුළු ආදායම උඩින් පෙන්නනවා
             lblTotalSales.setText("Total Revenue: Rs. " + String.format("%.2f", totalRevenue));
 
         } catch (Exception e) {
@@ -123,10 +126,9 @@ public class Reports extends JFrame {
         }
     }
 
-    // 2. තෝරපු බිල් එකේ බඩු ටික පූරවනවා
     private void loadSaleItems(int saleId) {
         try {
-            modelItems.setRowCount(0); // පරණ data මකනවා
+            modelItems.setRowCount(0);
             Connection conn = DBConnection.connect();
             PreparedStatement pst = conn.prepareStatement("SELECT * FROM sales_items WHERE sale_id = ?");
             pst.setInt(1, saleId);
