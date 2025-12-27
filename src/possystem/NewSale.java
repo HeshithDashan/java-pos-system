@@ -6,6 +6,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,7 +18,7 @@ public class NewSale extends JFrame {
     private JLabel lblTotal, lblBalance;
     private JTable cartTable;
     private DefaultTableModel cartModel;
-    private double netTotal = 0.0; // මුළු එකතුව මතක තියාගන්න
+    private double netTotal = 0.0; 
 
     public NewSale() {
         setTitle("New Sale (Billing)");
@@ -37,7 +39,6 @@ public class NewSale extends JFrame {
         lblTitle.setForeground(Color.WHITE);
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
-        // Date Display
         JLabel lblDate = new JLabel(java.time.LocalDate.now().toString()); 
         lblDate.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblDate.setForeground(new Color(240, 240, 240));
@@ -169,25 +170,36 @@ public class NewSale extends JFrame {
 
         add(rightPanel, BorderLayout.EAST);
 
-        // 🔥 --- FUNCTIONALITY (මෙතන තමයි වැඩ කෑලි) --- 🔥
+        // 🔥 --- FUNCTIONALITY --- 🔥
 
-        // 1. ADD Button Action
+        // 1. ADD Item Logic
         btnAdd.addActionListener(e -> addItemToCart());
 
-        // 2. Remove Button Action
+        // 2. Remove Item Logic
         btnRemove.addActionListener(e -> {
             int selectedRow = cartTable.getSelectedRow();
             if (selectedRow != -1) {
                 cartModel.removeRow(selectedRow);
-                updateNetTotal(); // ගාන අඩු වෙන්න ඕනේ
+                updateNetTotal(); 
+                calculateBalance(); // බඩු අයින් කරාමත් Balance එක වෙනස් වෙනවා
             } else {
                 Message.showError(this, "Please select an item to remove!");
             }
         });
 
-        // 3. Enter ගැහුවම වැඩ කරන්න (Shortcuts)
-        txtProductID.addActionListener(e -> txtQty.requestFocus()); // ID ගහලා Enter ගැහුවම Qty එකට යන්න
-        txtQty.addActionListener(e -> addItemToCart()); // Qty ගහලා Enter ගැහුවම Cart එකට යන්න
+        // 3. Shortcuts (Enter Key)
+        txtProductID.addActionListener(e -> txtQty.requestFocus()); 
+        txtQty.addActionListener(e -> addItemToCart()); 
+
+        // 4. 🔥 Auto Balance Calculation (සල්ලි ගහනකොටම Balance එක හැදෙනවා)
+        txtCash.addKeyListener(new KeyAdapter() {
+            public void keyReleased(KeyEvent e) {
+                calculateBalance();
+            }
+        });
+
+        // 5. 🔥 PAY Logic (Stock Update)
+        btnPay.addActionListener(e -> payAndPrint());
     }
 
     // --- LOGIC METHODS ---
@@ -203,50 +215,35 @@ public class NewSale extends JFrame {
 
         try {
             Connection conn = DBConnection.connect();
-            // ID එකෙන් හරි Name එකෙන් හරි Search කරනවා
             String sql = "SELECT * FROM products WHERE id = ? OR name = ?";
             PreparedStatement pst = conn.prepareStatement(sql);
             
-            // ID එක නම් අංකයක් ද කියලා බලනවා, නැත්නම් නම කියලා හිතනවා
             try {
                 int id = Integer.parseInt(productId);
                 pst.setInt(1, id);
-                pst.setString(2, ""); // නම හිස්ව තියනවා (ID මැච් වුනොත් ඇති)
+                pst.setString(2, ""); 
             } catch (NumberFormatException e) {
-                pst.setInt(1, 0); // ID එක 0 කරනවා
-                pst.setString(2, productId); // නම දානවා
+                pst.setInt(1, 0); 
+                pst.setString(2, productId); 
             }
 
             ResultSet rs = pst.executeQuery();
 
             if (rs.next()) {
-                // බඩු හම්බුනා!
                 String name = rs.getString("name");
                 double price = rs.getDouble("price");
                 int stock = rs.getInt("stock");
                 int qty = Integer.parseInt(qtyStr);
 
-                // Stock තියෙනවද බලනවා
                 if (stock >= qty) {
                     double lineTotal = price * qty;
-
-                    // Table එකට දානවා
-                    Object[] row = {
-                        rs.getInt("id"),
-                        name,
-                        price,
-                        qty,
-                        lineTotal
-                    };
+                    Object[] row = { rs.getInt("id"), name, price, qty, lineTotal };
                     cartModel.addRow(row);
-
-                    updateNetTotal(); // Total එක Update කරනවා
+                    updateNetTotal(); 
                     
-                    // Inputs Clear කරනවා ඊළඟ බඩුව ගහන්න ලේසි වෙන්න
                     txtProductID.setText("");
                     txtQty.setText("");
                     txtProductID.requestFocus(); 
-
                 } else {
                     Message.showError(this, "Not enough stock! Available: " + stock);
                 }
@@ -254,7 +251,6 @@ public class NewSale extends JFrame {
                 Message.showError(this, "Product not found!");
             }
             conn.close();
-
         } catch (Exception e) {
             Message.showError(this, "Error: " + e.getMessage());
         }
@@ -264,12 +260,76 @@ public class NewSale extends JFrame {
     private void updateNetTotal() {
         netTotal = 0.0;
         for (int i = 0; i < cartModel.getRowCount(); i++) {
-            netTotal += (double) cartModel.getValueAt(i, 4); // 4 වෙනි තීරුව (Total) එකතු කරනවා
+            netTotal += (double) cartModel.getValueAt(i, 4); 
         }
         lblTotal.setText(String.format("Rs. %.2f", netTotal));
+        calculateBalance(); // Total වෙනස් වුනාම Balance එකත් වෙනස් වෙනවා
     }
 
-    // UI Helpers (Label & TextStyles)
+    // 🔥 Balance එක හදන මැෂින් එක
+    private void calculateBalance() {
+        try {
+            double cash = Double.parseDouble(txtCash.getText());
+            double balance = cash - netTotal;
+            lblBalance.setText(String.format("%.2f", balance));
+            
+            if (balance < 0) {
+                lblBalance.setForeground(new Color(231, 76, 60)); // මදි නම් රතු පාට
+            } else {
+                lblBalance.setForeground(new Color(46, 204, 113)); // ඉතුරු නම් කොළ පාට
+            }
+        } catch (NumberFormatException e) {
+            lblBalance.setText("0.00");
+        }
+    }
+
+    // 🔥 සල්ලි ගෙවලා බඩු අඩු කරන එක
+    private void payAndPrint() {
+        if (cartModel.getRowCount() == 0) {
+            Message.showError(this, "Cart is empty!");
+            return;
+        }
+
+        try {
+            double cash = Double.parseDouble(txtCash.getText());
+            if (cash < netTotal) {
+                Message.showError(this, "Insufficient Cash!");
+                return;
+            }
+
+            // Database Stock Update Loop
+            Connection conn = DBConnection.connect();
+            String updateSql = "UPDATE products SET stock = stock - ? WHERE id = ?";
+            PreparedStatement pst = conn.prepareStatement(updateSql);
+
+            for (int i = 0; i < cartModel.getRowCount(); i++) {
+                int id = (int) cartModel.getValueAt(i, 0); // ID
+                int qty = (int) cartModel.getValueAt(i, 3); // Qty
+
+                pst.setInt(1, qty);
+                pst.setInt(2, id);
+                pst.executeUpdate(); // Update Stock
+            }
+            
+            conn.close();
+
+            // Success Message
+            Message.showSuccess(this, "Bill Paid & Printed Successfully! ✅");
+            
+            // Clear Everything
+            cartModel.setRowCount(0);
+            updateNetTotal();
+            txtCash.setText("");
+            lblBalance.setText("0.00");
+
+        } catch (NumberFormatException e) {
+            Message.showError(this, "Please enter valid cash amount!");
+        } catch (Exception e) {
+            Message.showError(this, "Error processing sale: " + e.getMessage());
+        }
+    }
+
+    // UI Helpers
     private JLabel createLabel(String text) {
         JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.PLAIN, 16));
