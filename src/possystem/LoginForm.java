@@ -11,7 +11,7 @@ public class LoginForm extends JFrame {
 
     public LoginForm() {
         setTitle("POS System Login");
-        setSize(400, 320);
+        setSize(400, 350); 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         
@@ -19,32 +19,49 @@ public class LoginForm extends JFrame {
         setLayout(new BorderLayout(10, 10));
 
         JLabel lblHeader = new JLabel("POS SYSTEM", SwingConstants.CENTER);
-
         lblHeader.putClientProperty("FlatLaf.styleClass", "h1"); 
+        lblHeader.setForeground(new Color(33, 150, 243)); 
         add(lblHeader, BorderLayout.NORTH);
 
-        JPanel formPanel = new JPanel(new GridLayout(4, 1, 5, 5));
+        JPanel formPanel = new JPanel(new GridLayout(4, 1, 8, 8)); 
         
-        formPanel.add(new JLabel("Username"));
+        JLabel lblUser = new JLabel("Username");
+        lblUser.setFont(new Font("Segoe UI", Font.BOLD, 14)); 
+        formPanel.add(lblUser);
+
         txtUsername = new JTextField();
         txtUsername.putClientProperty("JTextField.placeholderText", "Enter your username");
+        txtUsername.putClientProperty("JComponent.roundRect", true); 
+        txtUsername.setFont(new Font("Segoe UI", Font.BOLD, 14)); 
         formPanel.add(txtUsername);
 
-        formPanel.add(new JLabel("Password"));
+        JLabel lblPass = new JLabel("Password");
+        lblPass.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        formPanel.add(lblPass);
+
         txtPassword = new JPasswordField();
         txtPassword.putClientProperty("JTextField.placeholderText", "Enter your password");
-        txtPassword.putClientProperty("JComponent.showRevealButton", true); 
+        txtPassword.putClientProperty("JComponent.showRevealButton", true);
+        txtPassword.putClientProperty("JComponent.roundRect", true); 
+        txtPassword.setFont(new Font("Segoe UI", Font.BOLD, 14)); 
         formPanel.add(txtPassword);
 
         add(formPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
         
         btnLogin = new JButton("Login");
-        btnLogin.putClientProperty("JButton.buttonType", "roundRect"); 
         btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnLogin.setBackground(new Color(33, 150, 243));
+        btnLogin.setForeground(Color.WHITE); 
+        btnLogin.setPreferredSize(new Dimension(120, 40)); 
+        btnLogin.putClientProperty("JButton.buttonType", "roundRect"); 
         
         btnExit = new JButton("Exit");
+        btnExit.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnExit.setBackground(new Color(244, 67, 54)); 
+        btnExit.setForeground(Color.WHITE);
+        btnExit.setPreferredSize(new Dimension(100, 40));
         btnExit.putClientProperty("JButton.buttonType", "roundRect");
 
         buttonPanel.add(btnLogin);
@@ -52,17 +69,14 @@ public class LoginForm extends JFrame {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
-        // --- Logic එක වෙනස් කළා ---
         btnLogin.addActionListener(e -> {
             String username = txtUsername.getText();
             String password = new String(txtPassword.getPassword());
 
             if (username.equals("admin") && password.equals("123")) {
                 JOptionPane.showMessageDialog(this, "Login Successful! Welcome Sago!");
-                
-                this.dispose(); // Login එක වහන්න
-                new Dashboard().setVisible(true); // Dashboard එක ඕපන් කරන්න
-                
+                this.dispose(); 
+                new Dashboard().setVisible(true); 
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Details!", "Error", JOptionPane.ERROR_MESSAGE);
             }
