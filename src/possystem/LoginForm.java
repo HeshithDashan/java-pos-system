@@ -52,12 +52,17 @@ public class LoginForm extends JFrame {
 
         add(buttonPanel, BorderLayout.SOUTH);
 
+        // --- Logic එක වෙනස් කළා ---
         btnLogin.addActionListener(e -> {
             String username = txtUsername.getText();
             String password = new String(txtPassword.getPassword());
 
             if (username.equals("admin") && password.equals("123")) {
                 JOptionPane.showMessageDialog(this, "Login Successful! Welcome Sago!");
+                
+                this.dispose(); // Login එක වහන්න
+                new Dashboard().setVisible(true); // Dashboard එක ඕපන් කරන්න
+                
             } else {
                 JOptionPane.showMessageDialog(this, "Invalid Details!", "Error", JOptionPane.ERROR_MESSAGE);
             }
