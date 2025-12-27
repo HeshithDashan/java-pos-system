@@ -23,7 +23,7 @@ public class NewSale extends JFrame {
     private JLabel lblTotal, lblBalance;
     private JTable cartTable;
     private DefaultTableModel cartModel;
-    private double netTotal = 0.0; 
+    private double netTotal = 0.0;
 
     public NewSale() {
         setTitle("New Sale (Billing)");
@@ -33,31 +33,41 @@ public class NewSale extends JFrame {
         getContentPane().setBackground(new Color(24, 24, 24));
         setLayout(new BorderLayout());
 
-        // --- Header ---
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(33, 150, 243)); 
+        headerPanel.setBackground(new Color(33, 150, 243));
         headerPanel.setPreferredSize(new Dimension(800, 70));
         headerPanel.setBorder(new EmptyBorder(10, 30, 10, 30));
 
-        JLabel lblTitle = new JLabel("🛒 BILLING TERMINAL");
+        JLabel lblTitle = new JLabel(" BILLING TERMINAL");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
         lblTitle.setForeground(Color.WHITE);
-        headerPanel.add(lblTitle, BorderLayout.WEST);
 
-        JLabel lblDate = new JLabel(java.time.LocalDate.now().toString()); 
+        JLabel lblDate = new JLabel(java.time.LocalDate.now().toString());
         lblDate.setFont(new Font("Segoe UI", Font.BOLD, 18));
         lblDate.setForeground(new Color(240, 240, 240));
         headerPanel.add(lblDate, BorderLayout.EAST);
 
+        try {
+            java.net.URL iconURL = getClass().getResource("/icons/sale.png");
+            if (iconURL != null) {
+                ImageIcon icon = new ImageIcon(iconURL);
+                Image img = icon.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+                lblTitle.setIcon(new ImageIcon(img));
+                lblTitle.setIconTextGap(15);
+            }
+        } catch (Exception e) {
+            System.out.println("Error loading icon");
+        }
+        
+        headerPanel.add(lblTitle, BorderLayout.WEST);
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- Left Panel ---
         JPanel leftPanel = new JPanel(new BorderLayout(20, 20));
         leftPanel.setBackground(new Color(24, 24, 24));
         leftPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
-        inputPanel.setBackground(new Color(45, 45, 45)); 
+        inputPanel.setBackground(new Color(45, 45, 45));
         inputPanel.setBorder(BorderFactory.createLineBorder(new Color(60, 60, 60), 1));
         inputPanel.setPreferredSize(new Dimension(0, 80));
 
@@ -70,7 +80,7 @@ public class NewSale extends JFrame {
         inputPanel.add(txtQty);
 
         JButton btnAdd = new JButton("ADD ITEM");
-        btnAdd.setBackground(new Color(46, 204, 113)); 
+        btnAdd.setBackground(new Color(46, 204, 113));
         btnAdd.setForeground(Color.WHITE);
         btnAdd.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnAdd.setPreferredSize(new Dimension(120, 40));
@@ -83,9 +93,9 @@ public class NewSale extends JFrame {
         String[] columns = {"ID", "Product Name", "Price", "Qty", "Total"};
         cartModel = new DefaultTableModel(columns, 0);
         cartTable = new JTable(cartModel);
-        cartTable.setRowHeight(40); 
+        cartTable.setRowHeight(40);
         cartTable.setFont(new Font("Segoe UI", Font.PLAIN, 16));
-        cartTable.setShowVerticalLines(false); 
+        cartTable.setShowVerticalLines(false);
         cartTable.setIntercellSpacing(new Dimension(0, 0));
         
         JTableHeader header = cartTable.getTableHeader();
@@ -104,7 +114,6 @@ public class NewSale extends JFrame {
 
         add(leftPanel, BorderLayout.CENTER);
 
-        // --- Right Panel ---
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.setPreferredSize(new Dimension(400, 0));
         rightPanel.setBackground(new Color(30, 30, 30));
@@ -120,8 +129,8 @@ public class NewSale extends JFrame {
         totalDisplayPanel.add(lblNetTotalTitle);
 
         lblTotal = new JLabel("Rs. 0.00", SwingConstants.RIGHT);
-        lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 48)); 
-        lblTotal.setForeground(new Color(46, 204, 113)); 
+        lblTotal.setFont(new Font("Segoe UI", Font.BOLD, 48));
+        lblTotal.setForeground(new Color(46, 204, 113));
         totalDisplayPanel.add(lblTotal);
 
         rightPanel.add(totalDisplayPanel, BorderLayout.NORTH);
@@ -132,15 +141,15 @@ public class NewSale extends JFrame {
 
         paymentInputPanel.add(createLabel("Cash Received (Rs):"));
         txtCash = createTextField(10);
-        txtCash.setFont(new Font("Segoe UI", Font.BOLD, 24)); 
+        txtCash.setFont(new Font("Segoe UI", Font.BOLD, 24));
         txtCash.setHorizontalAlignment(JTextField.RIGHT);
-        txtCash.setForeground(new Color(255, 193, 7)); 
+        txtCash.setForeground(new Color(255, 193, 7));
         paymentInputPanel.add(txtCash);
 
         paymentInputPanel.add(createLabel("Balance (Rs):"));
         lblBalance = new JLabel("0.00", SwingConstants.RIGHT);
         lblBalance.setFont(new Font("Segoe UI", Font.BOLD, 24));
-        lblBalance.setForeground(new Color(231, 76, 60)); 
+        lblBalance.setForeground(new Color(231, 76, 60));
         paymentInputPanel.add(lblBalance);
 
         rightPanel.add(paymentInputPanel, BorderLayout.CENTER);
@@ -167,25 +176,23 @@ public class NewSale extends JFrame {
 
         rightPanel.add(btnPanel, BorderLayout.SOUTH);
 
-        // 🔥 මෙන්න මේ පේළිය තමයි මග හැරුනේ! 
         add(rightPanel, BorderLayout.EAST);
 
-        // --- Actions ---
         btnAdd.addActionListener(e -> addItemToCart());
 
         btnRemove.addActionListener(e -> {
             int selectedRow = cartTable.getSelectedRow();
             if (selectedRow != -1) {
                 cartModel.removeRow(selectedRow);
-                updateNetTotal(); 
-                calculateBalance(); 
+                updateNetTotal();
+                calculateBalance();
             } else {
                 Message.showError(this, "Please select an item to remove!");
             }
         });
 
-        txtProductID.addActionListener(e -> txtQty.requestFocus()); 
-        txtQty.addActionListener(e -> addItemToCart()); 
+        txtProductID.addActionListener(e -> txtQty.requestFocus());
+        txtQty.addActionListener(e -> addItemToCart());
 
         txtCash.addKeyListener(new KeyAdapter() {
             public void keyReleased(KeyEvent e) {
@@ -213,10 +220,10 @@ public class NewSale extends JFrame {
             try {
                 int id = Integer.parseInt(productId);
                 pst.setInt(1, id);
-                pst.setString(2, ""); 
+                pst.setString(2, "");
             } catch (NumberFormatException e) {
-                pst.setInt(1, 0); 
-                pst.setString(2, productId); 
+                pst.setInt(1, 0);
+                pst.setString(2, productId);
             }
 
             ResultSet rs = pst.executeQuery();
@@ -231,11 +238,11 @@ public class NewSale extends JFrame {
                     double lineTotal = price * qty;
                     Object[] row = { rs.getInt("id"), name, price, qty, lineTotal };
                     cartModel.addRow(row);
-                    updateNetTotal(); 
+                    updateNetTotal();
                     
                     txtProductID.setText("");
                     txtQty.setText("");
-                    txtProductID.requestFocus(); 
+                    txtProductID.requestFocus();
                 } else {
                     Message.showError(this, "Not enough stock! Available: " + stock);
                 }
@@ -251,10 +258,10 @@ public class NewSale extends JFrame {
     private void updateNetTotal() {
         netTotal = 0.0;
         for (int i = 0; i < cartModel.getRowCount(); i++) {
-            netTotal += (double) cartModel.getValueAt(i, 4); 
+            netTotal += (double) cartModel.getValueAt(i, 4);
         }
         lblTotal.setText(String.format("Rs. %.2f", netTotal));
-        calculateBalance(); 
+        calculateBalance();
     }
 
     private void calculateBalance() {
@@ -264,16 +271,15 @@ public class NewSale extends JFrame {
             lblBalance.setText(String.format("%.2f", balance));
             
             if (balance < 0) {
-                lblBalance.setForeground(new Color(231, 76, 60)); 
+                lblBalance.setForeground(new Color(231, 76, 60));
             } else {
-                lblBalance.setForeground(new Color(46, 204, 113)); 
+                lblBalance.setForeground(new Color(46, 204, 113));
             }
         } catch (NumberFormatException e) {
             lblBalance.setText("0.00");
         }
     }
 
-    // 🔥 SAVE SALE TO DATABASE & UPDATE STOCK
     private void payAndPrint() {
         if (cartModel.getRowCount() == 0) {
             Message.showError(this, "Cart is empty!");
@@ -311,10 +317,10 @@ public class NewSale extends JFrame {
             PreparedStatement pstStock = conn.prepareStatement(updateStock);
 
             for (int i = 0; i < cartModel.getRowCount(); i++) {
-                int prodId = (int) cartModel.getValueAt(i, 0); 
+                int prodId = (int) cartModel.getValueAt(i, 0);
                 String name = cartModel.getValueAt(i, 1).toString();
                 double price = (double) cartModel.getValueAt(i, 2);
-                int qty = (int) cartModel.getValueAt(i, 3); 
+                int qty = (int) cartModel.getValueAt(i, 3);
                 double subTotal = (double) cartModel.getValueAt(i, 4);
 
                 pstItem.setInt(1, saleId);
@@ -331,9 +337,9 @@ public class NewSale extends JFrame {
             
             conn.close();
 
-            Message.showSuccess(this, "Bill Saved & Printing... 🖨️");
+            Message.showSuccess(this, "Bill Saved & Printing...");
             
-            printBill(); 
+            printBill();
 
             cartModel.setRowCount(0);
             updateNetTotal();
@@ -357,8 +363,8 @@ public class NewSale extends JFrame {
                 Graphics2D g2d = (Graphics2D) graphics;
                 g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
 
-                int y = 20; 
-                int x = 10; 
+                int y = 20;
+                int x = 10;
 
                 g2d.setFont(new Font("Monospaced", Font.BOLD, 12));
                 g2d.drawString("      SMART POS SYSTEM      ", x, y); y += 15;
@@ -377,7 +383,7 @@ public class NewSale extends JFrame {
                     String price = cartModel.getValueAt(i, 2).toString();
                     String total = cartModel.getValueAt(i, 4).toString();
 
-                    if (name.length() > 12) name = name.substring(0, 12); 
+                    if (name.length() > 12) name = name.substring(0, 12);
 
                     g2d.drawString(String.format("%-12s %3s %7s %7s", name, qty, price, total), x, y);
                     y += 15;
