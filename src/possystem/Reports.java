@@ -1,152 +1,208 @@
 package possystem;
 
+import com.formdev.flatlaf.FlatClientProperties;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.sql.*;
 
-public class Reports extends JFrame {
+public class Reports extends JPanel {
 
-    private JTable tableSales, tableItems;
-    private DefaultTableModel modelSales, modelItems;
-    private JLabel lblTotalSales;
+    private JTable table;
+    private DefaultTableModel tableModel;
+    private JLabel lblTotalSales, lblTotalRevenue;
 
-    public Reports() {
-        setTitle("Sales Reports");
-        setSize(1000, 700);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(new Color(24, 24, 24));
-        setLayout(new BorderLayout(10, 10));
+    public Reports(ActionListener onBack) {
+        setLayout(new BorderLayout());
 
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBackground(new Color(33, 150, 243));
-        headerPanel.setPreferredSize(new Dimension(1000, 60));
+        headerPanel.setBackground(new Color(0, 123, 255));
+        headerPanel.setPreferredSize(new Dimension(800, 70));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        JLabel lblTitle = new JLabel(" SALES HISTORY");
-        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        JPanel titleContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 5));
+        titleContainer.setOpaque(false);
+
+        JButton btnBack = new JButton("Back");
+        btnBack.setFont(new Font("Poppins", Font.BOLD, 15));
+        btnBack.setForeground(new Color(0, 123, 255));
+        btnBack.setBackground(Color.WHITE);
+        btnBack.setFocusPainted(false);
+        btnBack.putClientProperty(FlatClientProperties.STYLE, "arc: 20; margin: 5,15,5,15;");
+        btnBack.addActionListener(onBack);
+
+        JLabel lblTitle = new JLabel("SALES REPORTS");
+        lblTitle.setFont(new Font("Poppins", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
-
-        try {
-            java.net.URL iconURL = getClass().getResource("/icons/report.png");
-            if (iconURL != null) {
-                ImageIcon icon = new ImageIcon(iconURL);
-                Image img = icon.getImage().getScaledInstance(35, 35, Image.SCALE_SMOOTH);
-                lblTitle.setIcon(new ImageIcon(img));
-                lblTitle.setIconTextGap(15);
-            }
-        } catch (Exception e) {
-            System.out.println("Error loading icon");
-        }
-
-        headerPanel.add(lblTitle, BorderLayout.WEST);
-
-        lblTotalSales = new JLabel("Total Revenue: Rs. 0.00");
-        lblTotalSales.setFont(new Font("Segoe UI", Font.BOLD, 20));
-        lblTotalSales.setForeground(Color.YELLOW);
-        headerPanel.add(lblTotalSales, BorderLayout.EAST);
-
+        
+        titleContainer.add(btnBack);
+        titleContainer.add(lblTitle);
+        headerPanel.add(titleContainer, BorderLayout.WEST);
         add(headerPanel, BorderLayout.NORTH);
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
-        splitPane.setDividerLocation(350);
-        splitPane.setResizeWeight(0.5);
+        JPanel contentPanel = new JPanel(new BorderLayout(20, 20));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        JPanel summaryPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         
-        JPanel panelSales = new JPanel(new BorderLayout());
-        panelSales.setBorder(BorderFactory.createTitledBorder(null, "Step 1: Select a Bill", 0, 0, new Font("Segoe UI", Font.BOLD, 14), Color.WHITE));
-        panelSales.setBackground(new Color(24, 24, 24));
-
-        String[] salesCols = {"Sale ID", "Date/Time", "Total (Rs)", "Cash (Rs)", "Balance (Rs)"};
-        modelSales = new DefaultTableModel(salesCols, 0);
-        tableSales = new JTable(modelSales);
-        tableSales.setRowHeight(30);
-        tableSales.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        JPanel cardSales = createCard("Today's Sales Count", "0", new Color(40, 167, 69));
+        lblTotalSales = (JLabel) cardSales.getComponent(1);
         
-        panelSales.add(new JScrollPane(tableSales), BorderLayout.CENTER);
-        splitPane.setTopComponent(panelSales);
-
-        JPanel panelItems = new JPanel(new BorderLayout());
-        panelItems.setBorder(BorderFactory.createTitledBorder(null, "Step 2: Bill Items", 0, 0, new Font("Segoe UI", Font.BOLD, 14), Color.WHITE));
-        panelItems.setBackground(new Color(24, 24, 24));
-
-        String[] itemCols = {"Product Name", "Price", "Qty", "Sub Total"};
-        modelItems = new DefaultTableModel(itemCols, 0);
-        tableItems = new JTable(modelItems);
-        tableItems.setRowHeight(30);
-        tableItems.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        JPanel cardRevenue = createCard("Today's Revenue", "Rs. 0.00", new Color(255, 193, 7));
+        lblTotalRevenue = (JLabel) cardRevenue.getComponent(1);
         
-        panelItems.add(new JScrollPane(tableItems), BorderLayout.CENTER);
-        splitPane.setBottomComponent(panelItems);
+        summaryPanel.add(cardSales);
+        summaryPanel.add(cardRevenue);
+        
+        contentPanel.add(summaryPanel, BorderLayout.NORTH);
 
-        add(splitPane, BorderLayout.CENTER);
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.setBorder(BorderFactory.createTitledBorder(" Recent Transactions "));
 
-        loadSales();
+        String[] columns = {"Invoice ID", "Customer", "Date & Time", "Total Amount"};
+        tableModel = new DefaultTableModel(columns, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        table = new JTable(tableModel);
+        table.setRowHeight(35);
+        table.getTableHeader().setFont(new Font("Poppins", Font.BOLD, 14));
+        table.getTableHeader().setBackground(new Color(240, 240, 240));
+        
+        JScrollPane scrollPane = new JScrollPane(table);
+        tablePanel.add(scrollPane, BorderLayout.CENTER);
+        
+        JLabel lblHint = new JLabel("* Click on a row to view bill items");
+        lblHint.setFont(new Font("Poppins", Font.ITALIC, 12));
+        lblHint.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        tablePanel.add(lblHint, BorderLayout.SOUTH);
 
-        tableSales.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting() && tableSales.getSelectedRow() != -1) {
-                int saleId = (int) tableSales.getValueAt(tableSales.getSelectedRow(), 0);
-                loadSaleItems(saleId);
+        contentPanel.add(tablePanel, BorderLayout.CENTER);
+        add(contentPanel, BorderLayout.CENTER);
+
+        loadSalesData();
+        loadSummary();
+
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    int row = table.getSelectedRow();
+                    if (row != -1) {
+                        int saleId = Integer.parseInt(tableModel.getValueAt(row, 0).toString());
+                        showBillDetails(saleId);
+                    }
+                }
             }
         });
     }
 
-    private void loadSales() {
+    private JPanel createCard(String title, String value, Color color) {
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+        panel.setBackground(color);
+        panel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+        panel.putClientProperty(FlatClientProperties.STYLE, "arc: 20");
+
+        JLabel lblTitle = new JLabel(title);
+        lblTitle.setFont(new Font("Poppins", Font.BOLD, 16));
+        lblTitle.setForeground(Color.WHITE);
+        
+        JLabel lblValue = new JLabel(value);
+        lblValue.setFont(new Font("Poppins", Font.BOLD, 28));
+        lblValue.setForeground(Color.WHITE);
+        
+        panel.add(lblTitle);
+        panel.add(lblValue);
+        return panel;
+    }
+
+    private void loadSalesData() {
+        tableModel.setRowCount(0);
         try {
-            modelSales.setRowCount(0);
             Connection conn = DBConnection.connect();
+            String sql = "SELECT s.id, c.name, s.sale_date, s.total_price " +
+                         "FROM sales s LEFT JOIN customers c ON s.customer_id = c.id " +
+                         "ORDER BY s.sale_date DESC";
             Statement stmt = conn.createStatement();
-
-            ResultSet rs = stmt.executeQuery("SELECT * FROM sales ORDER BY id DESC");
-
-            double totalRevenue = 0;
+            ResultSet rs = stmt.executeQuery(sql);
 
             while (rs.next()) {
-                double total = rs.getDouble("total_price");
-                totalRevenue += total;
-
-                Object[] row = {
+                tableModel.addRow(new Object[]{
                     rs.getInt("id"),
+                    rs.getString("name"),
                     rs.getString("sale_date"),
-                    total,
-                    rs.getDouble("cash_paid"),
-                    rs.getDouble("balance")
-                };
-                modelSales.addRow(row);
+                    rs.getDouble("total_price")
+                });
             }
             conn.close();
-            
-            lblTotalSales.setText("Total Revenue: Rs. " + String.format("%.2f", totalRevenue));
-
         } catch (Exception e) {
-            Message.showError(this, "Error loading sales: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    private void loadSaleItems(int saleId) {
+    private void loadSummary() {
         try {
-            modelItems.setRowCount(0);
             Connection conn = DBConnection.connect();
-            PreparedStatement pst = conn.prepareStatement("SELECT * FROM sales_items WHERE sale_id = ?");
-            pst.setInt(1, saleId);
-            ResultSet rs = pst.executeQuery();
+            String sql = "SELECT COUNT(*), SUM(total_price) FROM sales WHERE DATE(sale_date) = CURDATE()";
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
 
-            while (rs.next()) {
-                Object[] row = {
-                    rs.getString("product_name"),
-                    rs.getDouble("price"),
-                    rs.getInt("qty"),
-                    rs.getDouble("sub_total")
-                };
-                modelItems.addRow(row);
+            if (rs.next()) {
+                lblTotalSales.setText(String.valueOf(rs.getInt(1)));
+                double revenue = rs.getDouble(2);
+                lblTotalRevenue.setText("Rs. " + String.format("%.2f", revenue));
             }
             conn.close();
-
         } catch (Exception e) {
-            Message.showError(this, "Error loading items: " + e.getMessage());
+            e.printStackTrace();
         }
+    }
+
+    private void showBillDetails(int saleId) {
+        JDialog dialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Invoice Details #" + saleId, true);
+        dialog.setSize(500, 400);
+        dialog.setLocationRelativeTo(this);
+        dialog.setLayout(new BorderLayout());
+
+        String[] cols = {"Product", "Price", "Qty", "Subtotal"};
+        DefaultTableModel model = new DefaultTableModel(cols, 0);
+        JTable itemTable = new JTable(model);
+        itemTable.setRowHeight(30);
+        
+        try {
+            Connection conn = DBConnection.connect();
+            String sql = "SELECT p.name, si.unit_price, si.quantity, si.subtotal " +
+                         "FROM sales_items si JOIN products p ON si.product_id = p.id " +
+                         "WHERE si.sale_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, saleId);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("name"),
+                    rs.getDouble("unit_price"),
+                    rs.getInt("quantity"),
+                    rs.getDouble("subtotal")
+                });
+            }
+            conn.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        dialog.add(new JScrollPane(itemTable), BorderLayout.CENTER);
+        
+        JButton btnClose = new JButton("Close");
+        btnClose.addActionListener(e -> dialog.dispose());
+        JPanel btnPanel = new JPanel();
+        btnPanel.add(btnClose);
+        dialog.add(btnPanel, BorderLayout.SOUTH);
+
+        dialog.setVisible(true);
     }
 }
