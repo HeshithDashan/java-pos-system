@@ -103,6 +103,10 @@ public class Dashboard extends JFrame {
             else if (text.contains("Reports")) {
                 new Reports().setVisible(true);
             }
+            
+            else if (text.contains("User Management") || text.contains("Users")) {
+                new UserManagement().setVisible(true);
+            }
         });
 
         return btn;
