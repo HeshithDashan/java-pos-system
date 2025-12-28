@@ -6,6 +6,8 @@ import java.net.URL;
 
 public class Dashboard extends JFrame {
 
+    private JPanel contentPanel;
+
     public Dashboard(String userRole) {
         setTitle("Smart POS - Dashboard");
         setExtendedState(JFrame.MAXIMIZED_BOTH); 
@@ -45,6 +47,9 @@ public class Dashboard extends JFrame {
         headerPanel.add(btnLogout, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
 
+        contentPanel = new JPanel(new BorderLayout());
+        add(contentPanel, BorderLayout.CENTER);
+
         JPanel menuPanel = new JPanel(new GridLayout(2, 3, 30, 30));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
@@ -58,7 +63,7 @@ public class Dashboard extends JFrame {
             menuPanel.add(createMenuButton("User Management", "user.png"));
         }
 
-        add(menuPanel, BorderLayout.CENTER);
+        contentPanel.add(menuPanel, BorderLayout.CENTER);
 
         btnLogout.addActionListener(e -> {
             if (Message.showConfirm(this, "Are you sure you want to logout?")) {
@@ -95,15 +100,18 @@ public class Dashboard extends JFrame {
             else if (text.contains("New Sale")) {
                 new NewSale().setVisible(true);
             }
-
             else if (text.contains("Customers")) {
                 new CustomerManagement().setVisible(true);
             }
-            
             else if (text.contains("Reports")) {
                 new Reports().setVisible(true);
             }
-            
+            else if (text.contains("Settings")) {
+                contentPanel.removeAll();
+                contentPanel.add(new SettingsPanel());
+                contentPanel.revalidate();
+                contentPanel.repaint();
+            }
             else if (text.contains("User Management") || text.contains("Users")) {
                 new UserManagement().setVisible(true);
             }

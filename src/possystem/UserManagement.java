@@ -23,13 +23,12 @@ public class UserManagement extends JFrame {
         getContentPane().setBackground(new Color(24, 24, 24));
         setLayout(new BorderLayout(10, 10));
 
-        // --- Header ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(33, 150, 243));
         headerPanel.setPreferredSize(new Dimension(800, 60));
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        JLabel lblTitle = new JLabel("👤 USER MANAGEMENT");
+        JLabel lblTitle = new JLabel(" USER MANAGEMENT");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
         
@@ -46,7 +45,6 @@ public class UserManagement extends JFrame {
         headerPanel.add(lblTitle, BorderLayout.WEST);
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- Input Panel (Left) ---
         JPanel inputPanel = new JPanel(new GridLayout(4, 2, 10, 10));
         inputPanel.setBackground(new Color(24, 24, 24));
         inputPanel.setBorder(BorderFactory.createTitledBorder(null, "Add New User", 0, 0, new Font("Segoe UI", Font.BOLD, 14), Color.WHITE));
@@ -57,7 +55,7 @@ public class UserManagement extends JFrame {
         inputPanel.add(txtUser);
 
         inputPanel.add(createLabel("Password:"));
-        txtPass = createTextField(); // Normal text field for visibility (Change to JPasswordField if needed)
+        txtPass = createTextField(); 
         inputPanel.add(txtPass);
 
         inputPanel.add(createLabel("Role:"));
@@ -84,7 +82,6 @@ public class UserManagement extends JFrame {
         westPanel.add(inputPanel, BorderLayout.NORTH);
         add(westPanel, BorderLayout.WEST);
 
-        // --- Table (Center) ---
         String[] columns = {"ID", "Username", "Password", "Role"};
         tableModel = new DefaultTableModel(columns, 0);
         userTable = new JTable(tableModel);
@@ -97,7 +94,6 @@ public class UserManagement extends JFrame {
 
         loadUsers();
 
-        // --- Actions ---
         btnAdd.addActionListener(e -> addUser());
         btnDelete.addActionListener(e -> deleteUser());
     }
@@ -165,7 +161,6 @@ public class UserManagement extends JFrame {
         int id = (int) tableModel.getValueAt(selectedRow, 0);
         String role = tableModel.getValueAt(selectedRow, 3).toString();
 
-        // Admin කෙනෙක්ට තව Admin කෙනෙක්ව මකන්න දෙන එක පරිස්සමෙන්
         if (role.equalsIgnoreCase("admin")) {
              if (!Message.showConfirm(this, "Warning: You are deleting an ADMIN account. Continue?")) {
                  return;
