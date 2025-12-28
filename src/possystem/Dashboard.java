@@ -21,7 +21,7 @@ public class Dashboard extends JFrame {
         headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
 
         JLabel lblTitle = new JLabel(" SMART POS - " + userRole.toUpperCase());
-        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 28));
+        lblTitle.setFont(new Font("Poppins", Font.BOLD, 28));
         lblTitle.setForeground(Color.WHITE);
 
         try {
@@ -39,7 +39,7 @@ public class Dashboard extends JFrame {
         headerPanel.add(lblTitle, BorderLayout.WEST);
 
         JButton btnLogout = new JButton("Logout");
-        btnLogout.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        btnLogout.setFont(new Font("Poppins", Font.BOLD, 16));
         btnLogout.putClientProperty("JButton.buttonType", "roundRect");
         btnLogout.setBackground(new Color(244, 67, 54));
         btnLogout.setForeground(Color.WHITE);
@@ -83,10 +83,15 @@ public class Dashboard extends JFrame {
 
     private JButton createMenuButton(String text, String iconName) {
         JButton btn = new JButton(text);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 20));
+        
+        btn.setFont(new Font("Poppins", Font.BOLD, 18));
+        btn.setForeground(new Color(220, 220, 220));
         btn.setFocusPainted(false);
+        btn.setBorderPainted(false);
+        
         btn.putClientProperty("JButton.buttonType", "roundRect");
-
+        btn.setBackground(new Color(60, 63, 65));
+        
         try {
             java.net.URL iconURL = getClass().getResource("/icons/" + iconName);
             if (iconURL != null) {
@@ -94,11 +99,28 @@ public class Dashboard extends JFrame {
                 Image img = originalIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
                 btn.setIcon(new ImageIcon(img));
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         btn.setHorizontalTextPosition(SwingConstants.CENTER);
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setIconTextGap(15);
+        
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        btn.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btn.setBackground(new Color(80, 83, 85)); 
+                btn.setBorder(BorderFactory.createLineBorder(new Color(33, 150, 243), 2));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btn.setBackground(new Color(60, 63, 65));
+                btn.setBorder(null);
+            }
+        });
 
         btn.addActionListener(e -> {
             if (text.equals("Products") || text.equals("Manage Products")) {
@@ -114,9 +136,8 @@ public class Dashboard extends JFrame {
                 new Reports().setVisible(true);
             }
             else if (text.contains("Settings")) {
-
                 contentPanel.removeAll();
-                contentPanel.add(new SettingsPanel(evt -> showMenu())); 
+                contentPanel.add(new SettingsPanel(evt -> showMenu()));
                 contentPanel.revalidate();
                 contentPanel.repaint();
             }
