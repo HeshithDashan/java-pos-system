@@ -134,7 +134,10 @@ public class Dashboard extends JFrame {
             } else if (text.contains("New Sale")) {
                 new NewSale().setVisible(true);
             } else if (text.contains("Customers")) {
-                new CustomerManagement().setVisible(true);
+                contentPanel.removeAll();
+                contentPanel.add(new CustomerManagement(evt -> showMenu())); // මේක තමයි ලින්ක් එක
+                contentPanel.revalidate();
+                contentPanel.repaint();
             } else if (text.contains("Reports")) {
                 new Reports().setVisible(true);
             } else if (text.contains("Settings")) {
@@ -144,7 +147,7 @@ public class Dashboard extends JFrame {
                 contentPanel.repaint();
             } else if (text.contains("User Management") || text.contains("Users")) {
                 contentPanel.removeAll();
-                contentPanel.add(new UserManagement(evt -> showMenu())); // Settings වගේමයි
+                contentPanel.add(new UserManagement(evt -> showMenu()));
                 contentPanel.revalidate();
                 contentPanel.repaint();
             }
