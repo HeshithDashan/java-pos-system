@@ -20,6 +20,8 @@ public class LoginForm extends JFrame {
     private final Color BG_LEFT = new Color(13, 71, 161);          
     private final Color TEXT_COLOR = new Color(33, 37, 41);        
     private final Color SECONDARY_TEXT = new Color(108, 117, 125); 
+    private final Color EXIT_COLOR = new Color(244, 67, 54);
+    private final Color EXIT_HOVER = new Color(211, 47, 47);
 
     public LoginForm() {
         setTitle("Smart POS - Login");
@@ -63,7 +65,7 @@ public class LoginForm extends JFrame {
 
         JLabel lblLoginTitle = new JLabel("Welcome Back!");
         lblLoginTitle.setFont(new Font("Poppins", Font.BOLD, 32));
-        lblLoginTitle.setForeground(TEXT_COLOR);
+        lblLoginTitle.setForeground(new Color(20, 20, 20));
         lblLoginTitle.setHorizontalAlignment(SwingConstants.CENTER);
         
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 2;
@@ -137,21 +139,20 @@ public class LoginForm extends JFrame {
 
         JButton btnExit = new JButton("Exit");
         btnExit.setFont(new Font("Poppins", Font.BOLD, 16));
-        btnExit.setBackground(Color.WHITE);
-        btnExit.setForeground(SECONDARY_TEXT);
+        btnExit.setBackground(EXIT_COLOR);
+        btnExit.setForeground(Color.WHITE);
         btnExit.setPreferredSize(new Dimension(120, 50));
         btnExit.setFocusPainted(false);
-        btnExit.putClientProperty(FlatClientProperties.STYLE, "arc: 50; borderColor: #ced4da; borderWidth: 2");
+        btnExit.setBorderPainted(false);
+        btnExit.putClientProperty(FlatClientProperties.STYLE, "arc: 50");
         btnExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
         btnExit.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent evt) {
-                btnExit.setBackground(new Color(248, 249, 250)); 
-                btnExit.setForeground(TEXT_COLOR);
+                btnExit.setBackground(EXIT_HOVER);
             }
             public void mouseExited(MouseEvent evt) {
-                btnExit.setBackground(Color.WHITE);
-                btnExit.setForeground(SECONDARY_TEXT);
+                btnExit.setBackground(EXIT_COLOR);
             }
         });
 
