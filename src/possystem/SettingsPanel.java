@@ -1,32 +1,53 @@
-package possystem; // මේක අනිවාර්යයෙන් තියෙන්න ඕන
+package possystem;
 
 import com.formdev.flatlaf.FlatClientProperties;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
-public class SettingsPanel extends JPanel { // මේක public වෙන්නම ඕන
+public class SettingsPanel extends JPanel {
 
     private JTextField txtShopName;
     private JTextField txtAddress;
     private JTextField txtPhone;
     private JTextField txtCurrency;
 
-    public SettingsPanel() {
+    // Constructor එකට 'onBack' කියලා parameter එකක් එකතු කළා
+    public SettingsPanel(ActionListener onBack) {
         setLayout(new BorderLayout());
         
-        // Header
+        // 1. Header Area
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(0, 132, 255));
         headerPanel.setPreferredSize(new Dimension(800, 60));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10)); // Padding
         
-        JLabel lblTitle = new JLabel("  ⚙ SETTINGS");
+        // Back Button & Title Container (West Side)
+        JPanel titleContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 12));
+        titleContainer.setOpaque(false);
+
+        JButton btnBack = new JButton("Back");
+        btnBack.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnBack.setForeground(Color.WHITE);
+        btnBack.setBackground(new Color(255, 255, 255, 50)); // Transparent white
+        btnBack.setBorderPainted(false);
+        btnBack.setFocusPainted(false);
+        btnBack.putClientProperty(FlatClientProperties.STYLE, "arc: 10");
+        
+        // Back Button Action
+        btnBack.addActionListener(onBack);
+
+        JLabel lblTitle = new JLabel("⚙ SETTINGS");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblTitle.setForeground(Color.WHITE);
-        headerPanel.add(lblTitle, BorderLayout.WEST);
         
+        titleContainer.add(btnBack);
+        titleContainer.add(lblTitle);
+        
+        headerPanel.add(titleContainer, BorderLayout.WEST);
         add(headerPanel, BorderLayout.NORTH);
 
-        // Content
+        // 2. Form Content Area
         JPanel contentPanel = new JPanel(new GridBagLayout());
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 50, 20, 50));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -42,7 +63,7 @@ public class SettingsPanel extends JPanel { // මේක public වෙන්න�
         centerWrapper.add(contentPanel);
         add(centerWrapper, BorderLayout.CENTER);
 
-        // Footer
+        // 3. Footer (Save Button)
         JPanel footerPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         footerPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 

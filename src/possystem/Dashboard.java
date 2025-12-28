@@ -7,6 +7,7 @@ import java.net.URL;
 public class Dashboard extends JFrame {
 
     private JPanel contentPanel;
+    private JPanel menuPanel; // Menu එක variable එකක් විදියට තියාගන්නවා
 
     public Dashboard(String userRole) {
         setTitle("Smart POS - Dashboard");
@@ -14,6 +15,7 @@ public class Dashboard extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
+        // --- Header Section ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(33, 150, 243));
         headerPanel.setPreferredSize(new Dimension(800, 90));
@@ -32,7 +34,7 @@ public class Dashboard extends JFrame {
                 lblTitle.setIconTextGap(15);
             }
         } catch (Exception e) {
-            System.out.println("Header icon error: " + e.getMessage());
+            System.out.println("Icon Error: " + e.getMessage());
         }
 
         headerPanel.add(lblTitle, BorderLayout.WEST);
@@ -47,10 +49,12 @@ public class Dashboard extends JFrame {
         headerPanel.add(btnLogout, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
 
+        // --- Content Section ---
         contentPanel = new JPanel(new BorderLayout());
         add(contentPanel, BorderLayout.CENTER);
 
-        JPanel menuPanel = new JPanel(new GridLayout(2, 3, 30, 30));
+        // --- Create Menu Panel (Saved in variable) ---
+        menuPanel = new JPanel(new GridLayout(2, 3, 30, 30));
         menuPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
         menuPanel.add(createMenuButton("New Sale", "sale.png"));
@@ -62,8 +66,9 @@ public class Dashboard extends JFrame {
             menuPanel.add(createMenuButton("Settings", "settings.png"));
             menuPanel.add(createMenuButton("User Management", "user.png"));
         }
-
-        contentPanel.add(menuPanel, BorderLayout.CENTER);
+        
+        // මුලින්ම Menu එක පෙන්වන්න
+        showMenu();
 
         btnLogout.addActionListener(e -> {
             if (Message.showConfirm(this, "Are you sure you want to logout?")) {
@@ -71,6 +76,14 @@ public class Dashboard extends JFrame {
                 new LoginForm().setVisible(true);
             }
         });
+    }
+    
+    // Menu එක පෙන්වන Method එක
+    private void showMenu() {
+        contentPanel.removeAll();
+        contentPanel.add(menuPanel, BorderLayout.CENTER);
+        contentPanel.revalidate();
+        contentPanel.repaint();
     }
 
     private JButton createMenuButton(String text, String iconName) {
@@ -86,8 +99,7 @@ public class Dashboard extends JFrame {
                 Image img = originalIcon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
                 btn.setIcon(new ImageIcon(img));
             }
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
 
         btn.setHorizontalTextPosition(SwingConstants.CENTER);
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -107,8 +119,9 @@ public class Dashboard extends JFrame {
                 new Reports().setVisible(true);
             }
             else if (text.contains("Settings")) {
+                // Settings වෙත යන විට, Back ගියොත් කළ යුතු දේ (showMenu) යවනවා
                 contentPanel.removeAll();
-                contentPanel.add(new SettingsPanel());
+                contentPanel.add(new SettingsPanel(evt -> showMenu())); // මෙන්න මැජික් එක
                 contentPanel.revalidate();
                 contentPanel.repaint();
             }
