@@ -15,7 +15,6 @@ public class LoginForm extends JFrame {
     private JCheckBox chkRemember;
     private Preferences prefs;
     
-    // --- COLORS ---
     private final Color PRIMARY_COLOR = new Color(0, 123, 255);    
     private final Color PRIMARY_HOVER = new Color(0, 86, 179);     
     private final Color BG_LEFT = new Color(13, 71, 161);          
@@ -32,7 +31,6 @@ public class LoginForm extends JFrame {
 
         prefs = Preferences.userNodeForPackage(LoginForm.class);
 
-        // --- LEFT PANEL ---
         JPanel leftPanel = new JPanel();
         leftPanel.setBackground(BG_LEFT);
         leftPanel.setPreferredSize(new Dimension(400, 600));
@@ -55,7 +53,6 @@ public class LoginForm extends JFrame {
 
         add(leftPanel, BorderLayout.WEST);
 
-        // --- RIGHT PANEL (FORM) ---
         JPanel rightPanel = new JPanel(new GridBagLayout());
         rightPanel.setBackground(Color.WHITE);
         rightPanel.setBorder(new EmptyBorder(20, 20, 20, 20)); 
@@ -64,7 +61,6 @@ public class LoginForm extends JFrame {
         gbc.insets = new Insets(12, 10, 12, 10); 
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        // 1. Title
         JLabel lblLoginTitle = new JLabel("Welcome Back!");
         lblLoginTitle.setFont(new Font("Poppins", Font.BOLD, 32));
         lblLoginTitle.setForeground(TEXT_COLOR);
@@ -74,7 +70,6 @@ public class LoginForm extends JFrame {
         gbc.insets = new Insets(0, 0, 40, 0); 
         rightPanel.add(lblLoginTitle, gbc);
 
-        // 2. Username
         gbc.gridy = 1; gbc.gridwidth = 1;
         gbc.insets = new Insets(10, 10, 5, 10);
         JLabel lblUser = new JLabel("Username");
@@ -88,12 +83,10 @@ public class LoginForm extends JFrame {
         txtUsername.setPreferredSize(new Dimension(320, 50)); 
         txtUsername.setFont(new Font("Poppins", Font.PLAIN, 15));
         
-        // FIXED LINE: 'Component.' prefix removed
         txtUsername.putClientProperty(FlatClientProperties.STYLE, "arc: 15; iconTextGap: 10; showClearButton: true; borderColor: #ced4da; focusedBorderColor: #007bff; borderWidth: 2");
         txtUsername.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Enter your username");
         rightPanel.add(txtUsername, gbc);
 
-        // 3. Password
         gbc.gridy = 3;
         gbc.insets = new Insets(10, 10, 5, 10);
         JLabel lblPass = new JLabel("Password");
@@ -107,12 +100,10 @@ public class LoginForm extends JFrame {
         txtPassword.setPreferredSize(new Dimension(320, 50));
         txtPassword.setFont(new Font("Poppins", Font.PLAIN, 15));
         
-        // FIXED LINE: 'Component.' prefix removed
         txtPassword.putClientProperty(FlatClientProperties.STYLE, "arc: 15; showRevealButton: true; borderColor: #ced4da; focusedBorderColor: #007bff; borderWidth: 2");
         txtPassword.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Enter your password");
         rightPanel.add(txtPassword, gbc);
         
-        // 4. Remember Me
         gbc.gridy = 5;
         gbc.insets = new Insets(5, 10, 5, 10);
         chkRemember = new JCheckBox("Remember Me");
@@ -122,11 +113,9 @@ public class LoginForm extends JFrame {
         chkRemember.setFocusPainted(false);
         rightPanel.add(chkRemember, gbc);
 
-        // --- BUTTONS AREA ---
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 0));
         btnPanel.setBackground(Color.WHITE);
 
-        // 5. Login Button (Primary)
         JButton btnLogin = new JButton("Login");
         btnLogin.setFont(new Font("Poppins", Font.BOLD, 16));
         btnLogin.setBackground(PRIMARY_COLOR);
@@ -146,14 +135,12 @@ public class LoginForm extends JFrame {
             }
         });
 
-        // 6. Exit Button (Outline Style)
         JButton btnExit = new JButton("Exit");
         btnExit.setFont(new Font("Poppins", Font.BOLD, 16));
         btnExit.setBackground(Color.WHITE);
         btnExit.setForeground(SECONDARY_TEXT);
         btnExit.setPreferredSize(new Dimension(120, 50));
         btnExit.setFocusPainted(false);
-        // FIXED LINE: 'borderColor' is correct here
         btnExit.putClientProperty(FlatClientProperties.STYLE, "arc: 50; borderColor: #ced4da; borderWidth: 2");
         btnExit.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
@@ -177,7 +164,6 @@ public class LoginForm extends JFrame {
 
         add(rightPanel, BorderLayout.CENTER);
 
-        // --- ACTIONS ---
         btnLogin.addActionListener(e -> {
             String user = txtUsername.getText();
             String pass = new String(txtPassword.getPassword());
@@ -196,7 +182,6 @@ public class LoginForm extends JFrame {
         loadPreferences();
     }
 
-    // --- Backend Logic ---
 
     private boolean validateLogin(String username, String password) {
         try {
