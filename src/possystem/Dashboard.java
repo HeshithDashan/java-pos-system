@@ -134,7 +134,10 @@ public class Dashboard extends JFrame {
                 contentPanel.revalidate();
                 contentPanel.repaint();
             } else if (text.contains("New Sale")) {
-                new NewSale().setVisible(true);
+                contentPanel.removeAll();
+                contentPanel.add(new NewSale(evt -> showMenu()));
+                contentPanel.revalidate();
+                contentPanel.repaint();
             } else if (text.contains("Customers")) {
                 contentPanel.removeAll();
                 contentPanel.add(new CustomerManagement(evt -> showMenu()));
