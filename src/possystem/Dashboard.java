@@ -7,11 +7,11 @@ import java.net.URL;
 public class Dashboard extends JFrame {
 
     private JPanel contentPanel;
-    private JPanel menuPanel; 
+    private JPanel menuPanel;
 
     public Dashboard(String userRole) {
         setTitle("Smart POS - Dashboard");
-        setExtendedState(JFrame.MAXIMIZED_BOTH); 
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -55,7 +55,7 @@ public class Dashboard extends JFrame {
         menuPanel.setBorder(BorderFactory.createEmptyBorder(50, 50, 50, 50));
 
         menuPanel.add(createMenuButton("New Sale", "sale.png"));
-        menuPanel.add(createMenuButton("Products", "product.png")); 
+        menuPanel.add(createMenuButton("Products", "product.png"));
         menuPanel.add(createMenuButton("Customers", "customer.png"));
 
         if (userRole.equalsIgnoreCase("admin")) {
@@ -63,7 +63,7 @@ public class Dashboard extends JFrame {
             menuPanel.add(createMenuButton("Settings", "settings.png"));
             menuPanel.add(createMenuButton("User Management", "user.png"));
         }
-        
+
         showMenu();
 
         btnLogout.addActionListener(e -> {
@@ -73,7 +73,7 @@ public class Dashboard extends JFrame {
             }
         });
     }
-    
+
     private void showMenu() {
         contentPanel.removeAll();
         contentPanel.add(menuPanel, BorderLayout.CENTER);
@@ -83,17 +83,17 @@ public class Dashboard extends JFrame {
 
     private JButton createMenuButton(String text, String iconName) {
         JButton btn = new JButton(text);
-        
+
         btn.setFont(new Font("Poppins", Font.BOLD, 18));
         btn.setForeground(new Color(220, 220, 220));
         btn.setFocusPainted(false);
-        
-        btn.setBackground(new Color(60, 63, 65)); 
-        
-        btn.putClientProperty("JButton.buttonType", "roundRect"); 
-        btn.putClientProperty("Component.borderColor", new Color(100, 100, 100)); 
-        btn.putClientProperty("Component.borderWidth", 1); 
-        
+
+        btn.setBackground(new Color(60, 63, 65));
+
+        btn.putClientProperty("JButton.buttonType", "roundRect");
+        btn.putClientProperty("Component.borderColor", new Color(100, 100, 100));
+        btn.putClientProperty("Component.borderWidth", 1);
+
         try {
             java.net.URL iconURL = getClass().getResource("/icons/" + iconName);
             if (iconURL != null) {
@@ -108,12 +108,12 @@ public class Dashboard extends JFrame {
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setIconTextGap(15);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        
+
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                btn.setBackground(new Color(80, 83, 85)); 
-                btn.putClientProperty("Component.borderColor", new Color(33, 150, 243)); 
+                btn.setBackground(new Color(80, 83, 85));
+                btn.putClientProperty("Component.borderColor", new Color(33, 150, 243));
                 btn.putClientProperty("Component.borderWidth", 2);
                 btn.repaint();
             }
@@ -122,7 +122,7 @@ public class Dashboard extends JFrame {
             public void mouseExited(java.awt.event.MouseEvent evt) {
 
                 btn.setBackground(new Color(60, 63, 65));
-                btn.putClientProperty("Component.borderColor", new Color(100, 100, 100)); 
+                btn.putClientProperty("Component.borderColor", new Color(100, 100, 100));
                 btn.putClientProperty("Component.borderWidth", 1);
                 btn.repaint();
             }
@@ -131,24 +131,22 @@ public class Dashboard extends JFrame {
         btn.addActionListener(e -> {
             if (text.equals("Products") || text.equals("Manage Products")) {
                 new ProductManagement().setVisible(true);
-            } 
-            else if (text.contains("New Sale")) {
+            } else if (text.contains("New Sale")) {
                 new NewSale().setVisible(true);
-            }
-            else if (text.contains("Customers")) {
+            } else if (text.contains("Customers")) {
                 new CustomerManagement().setVisible(true);
-            }
-            else if (text.contains("Reports")) {
+            } else if (text.contains("Reports")) {
                 new Reports().setVisible(true);
-            }
-            else if (text.contains("Settings")) {
+            } else if (text.contains("Settings")) {
                 contentPanel.removeAll();
                 contentPanel.add(new SettingsPanel(evt -> showMenu()));
                 contentPanel.revalidate();
                 contentPanel.repaint();
-            }
-            else if (text.contains("User Management") || text.contains("Users")) {
-                new UserManagement().setVisible(true);
+            } else if (text.contains("User Management") || text.contains("Users")) {
+                contentPanel.removeAll();
+                contentPanel.add(new UserManagement(evt -> showMenu())); // Settings වගේමයි
+                contentPanel.revalidate();
+                contentPanel.repaint();
             }
         });
 
