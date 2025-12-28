@@ -87,10 +87,12 @@ public class Dashboard extends JFrame {
         btn.setFont(new Font("Poppins", Font.BOLD, 18));
         btn.setForeground(new Color(220, 220, 220));
         btn.setFocusPainted(false);
-        btn.setBorderPainted(false);
         
-        btn.putClientProperty("JButton.buttonType", "roundRect");
-        btn.setBackground(new Color(60, 63, 65));
+        btn.setBackground(new Color(60, 63, 65)); 
+        
+        btn.putClientProperty("JButton.buttonType", "roundRect"); 
+        btn.putClientProperty("Component.borderColor", new Color(100, 100, 100)); 
+        btn.putClientProperty("Component.borderWidth", 1); 
         
         try {
             java.net.URL iconURL = getClass().getResource("/icons/" + iconName);
@@ -105,20 +107,24 @@ public class Dashboard extends JFrame {
         btn.setHorizontalTextPosition(SwingConstants.CENTER);
         btn.setVerticalTextPosition(SwingConstants.BOTTOM);
         btn.setIconTextGap(15);
-        
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         btn.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 btn.setBackground(new Color(80, 83, 85)); 
-                btn.setBorder(BorderFactory.createLineBorder(new Color(33, 150, 243), 2));
+                btn.putClientProperty("Component.borderColor", new Color(33, 150, 243)); 
+                btn.putClientProperty("Component.borderWidth", 2);
+                btn.repaint();
             }
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
+
                 btn.setBackground(new Color(60, 63, 65));
-                btn.setBorder(null);
+                btn.putClientProperty("Component.borderColor", new Color(100, 100, 100)); 
+                btn.putClientProperty("Component.borderWidth", 1);
+                btn.repaint();
             }
         });
 
