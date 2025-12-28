@@ -120,7 +120,6 @@ public class Dashboard extends JFrame {
 
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
-
                 btn.setBackground(new Color(60, 63, 65));
                 btn.putClientProperty("Component.borderColor", new Color(100, 100, 100));
                 btn.putClientProperty("Component.borderWidth", 1);
@@ -130,12 +129,15 @@ public class Dashboard extends JFrame {
 
         btn.addActionListener(e -> {
             if (text.equals("Products") || text.equals("Manage Products")) {
-                new ProductManagement().setVisible(true);
+                contentPanel.removeAll();
+                contentPanel.add(new ProductManagement(evt -> showMenu()));
+                contentPanel.revalidate();
+                contentPanel.repaint();
             } else if (text.contains("New Sale")) {
                 new NewSale().setVisible(true);
             } else if (text.contains("Customers")) {
                 contentPanel.removeAll();
-                contentPanel.add(new CustomerManagement(evt -> showMenu())); // මේක තමයි ලින්ක් එක
+                contentPanel.add(new CustomerManagement(evt -> showMenu()));
                 contentPanel.revalidate();
                 contentPanel.repaint();
             } else if (text.contains("Reports")) {

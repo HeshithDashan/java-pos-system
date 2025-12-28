@@ -22,7 +22,6 @@ public class CustomerManagement extends JPanel {
     public CustomerManagement(ActionListener onBack) {
         setLayout(new BorderLayout());
 
-        // --- 1. HEADER ---
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(0, 123, 255));
         headerPanel.setPreferredSize(new Dimension(800, 70));
@@ -43,7 +42,7 @@ public class CustomerManagement extends JPanel {
         JLabel lblTitle = new JLabel("CUSTOMER MANAGEMENT");
         lblTitle.setFont(new Font("Poppins", Font.BOLD, 24));
         lblTitle.setForeground(Color.WHITE);
-        
+
         try {
             URL iconURL = getClass().getResource("/icons/customer.png");
             if (iconURL != null) {
@@ -52,18 +51,17 @@ public class CustomerManagement extends JPanel {
                 lblTitle.setIcon(new ImageIcon(img));
                 lblTitle.setIconTextGap(15);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+        }
 
         titleContainer.add(btnBack);
         titleContainer.add(lblTitle);
         headerPanel.add(titleContainer, BorderLayout.WEST);
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- 2. MAIN CONTENT ---
         JPanel contentPanel = new JPanel(new GridLayout(1, 2, 20, 0));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        
-        // --- LEFT: FORM ---
+
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBorder(BorderFactory.createTitledBorder(" Manage Customer Details "));
         GridBagConstraints gbc = new GridBagConstraints();
@@ -71,8 +69,8 @@ public class CustomerManagement extends JPanel {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1.0;
 
-        // Name
-        gbc.gridx = 0; gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
         formPanel.add(new JLabel("Customer Name:"), gbc);
         gbc.gridy = 1;
         txtName = new JTextField();
@@ -80,7 +78,6 @@ public class CustomerManagement extends JPanel {
         txtName.putClientProperty(FlatClientProperties.STYLE, "arc: 10; borderColor: #ced4da; borderWidth: 2");
         formPanel.add(txtName, gbc);
 
-        // Phone
         gbc.gridy = 2;
         formPanel.add(new JLabel("Phone Number:"), gbc);
         gbc.gridy = 3;
@@ -89,7 +86,6 @@ public class CustomerManagement extends JPanel {
         txtPhone.putClientProperty(FlatClientProperties.STYLE, "arc: 10; borderColor: #ced4da; borderWidth: 2");
         formPanel.add(txtPhone, gbc);
 
-        // Email
         gbc.gridy = 4;
         formPanel.add(new JLabel("Email Address:"), gbc);
         gbc.gridy = 5;
@@ -98,12 +94,11 @@ public class CustomerManagement extends JPanel {
         txtEmail.putClientProperty(FlatClientProperties.STYLE, "arc: 10; borderColor: #ced4da; borderWidth: 2");
         formPanel.add(txtEmail, gbc);
 
-        // Buttons
         JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
-        JButton btnAdd = createButton("Add", new Color(40, 167, 69)); 
-        JButton btnUpdate = createButton("Update", new Color(255, 193, 7)); 
-        JButton btnDelete = createButton("Delete", new Color(220, 53, 69)); 
-        JButton btnClear = createButton("Clear", new Color(108, 117, 125)); 
+        JButton btnAdd = createButton("Add", new Color(40, 167, 69));
+        JButton btnUpdate = createButton("Update", new Color(255, 193, 7));
+        JButton btnDelete = createButton("Delete", new Color(220, 53, 69));
+        JButton btnClear = createButton("Clear", new Color(108, 117, 125));
 
         btnPanel.add(btnAdd);
         btnPanel.add(btnUpdate);
@@ -116,7 +111,6 @@ public class CustomerManagement extends JPanel {
 
         contentPanel.add(formPanel);
 
-        // --- RIGHT: TABLE ---
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.setBorder(BorderFactory.createTitledBorder(" Customer List "));
 
@@ -126,17 +120,15 @@ public class CustomerManagement extends JPanel {
         table.setRowHeight(30);
         table.getTableHeader().setFont(new Font("Poppins", Font.BOLD, 14));
         table.getTableHeader().setBackground(new Color(240, 240, 240));
-        
+
         JScrollPane scrollPane = new JScrollPane(table);
         tablePanel.add(scrollPane, BorderLayout.CENTER);
-        
+
         contentPanel.add(tablePanel);
         add(contentPanel, BorderLayout.CENTER);
 
-        // --- ACTIONS ---
-        
         btnAdd.addActionListener(e -> {
-            if(txtName.getText().isEmpty() || txtPhone.getText().isEmpty()) {
+            if (txtName.getText().isEmpty() || txtPhone.getText().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Name and Phone are required!");
                 return;
             }
@@ -148,8 +140,10 @@ public class CustomerManagement extends JPanel {
         });
 
         btnUpdate.addActionListener(e -> {
-            if(selectedCustomerId == -1) return;
-             if (updateCustomer(selectedCustomerId, txtName.getText(), txtPhone.getText(), txtEmail.getText())) {
+            if (selectedCustomerId == -1) {
+                return;
+            }
+            if (updateCustomer(selectedCustomerId, txtName.getText(), txtPhone.getText(), txtEmail.getText())) {
                 loadCustomers();
                 clearForm();
                 JOptionPane.showMessageDialog(this, "Customer Updated!");
@@ -157,14 +151,16 @@ public class CustomerManagement extends JPanel {
         });
 
         btnDelete.addActionListener(e -> {
-             if(selectedCustomerId == -1) return;
-             if(JOptionPane.showConfirmDialog(this, "Delete this customer?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                 if(deleteCustomer(selectedCustomerId)) {
-                     loadCustomers();
-                     clearForm();
-                     JOptionPane.showMessageDialog(this, "Customer Deleted!");
-                 }
-             }
+            if (selectedCustomerId == -1) {
+                return;
+            }
+            if (JOptionPane.showConfirmDialog(this, "Delete this customer?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                if (deleteCustomer(selectedCustomerId)) {
+                    loadCustomers();
+                    clearForm();
+                    JOptionPane.showMessageDialog(this, "Customer Deleted!");
+                }
+            }
         });
 
         btnClear.addActionListener(e -> clearForm());
@@ -181,11 +177,9 @@ public class CustomerManagement extends JPanel {
             }
         });
 
-        loadCustomers(); 
+        loadCustomers();
     }
-    
-    // --- HELPER METHODS ---
-    
+
     private JButton createButton(String text, Color color) {
         JButton btn = new JButton(text);
         btn.setBackground(color);
@@ -202,8 +196,6 @@ public class CustomerManagement extends JPanel {
         selectedCustomerId = -1;
         table.clearSelection();
     }
-
-    // --- DATABASE ---
 
     private void loadCustomers() {
         tableModel.setRowCount(0);
@@ -241,7 +233,7 @@ public class CustomerManagement extends JPanel {
             return false;
         }
     }
-    
+
     private boolean updateCustomer(int id, String name, String phone, String email) {
         try {
             Connection conn = DBConnection.connect();
@@ -258,7 +250,7 @@ public class CustomerManagement extends JPanel {
             return false;
         }
     }
-    
+
     private boolean deleteCustomer(int id) {
         try {
             Connection conn = DBConnection.connect();
